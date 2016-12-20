@@ -12,7 +12,10 @@ symbol_table new_st()
 	symbol_table st = malloc(sizeof(symbol_table));
 
 	if(st == NULL)
-		return 0;
+	{
+		fprintf(stderr, "failed to allocate memory.\n");
+        exit(-1);
+	}		
 	
 	st->first = NULL;
 	st->last  = NULL;
@@ -144,7 +147,7 @@ int is_empty_st(symbol_table st)
  * @param st: tabla de símbolos
  */
 void free_st(symbol_table st)
-{
+{	
 	free(st);
 	/*if(is_empty_st(st))
 	{
@@ -159,19 +162,18 @@ void free_st(symbol_table st)
 	{
 		symbol *aux1 = st->first;
 		symbol *aux2 = aux1->next;
-		
+		int cont = 1;		
 		while(aux2->next != NULL)
 		{
-			free(aux1);
+			free(aux1);			
 			symbol *aux1 = aux2;
 			aux2         = aux2->next;
 		}
 
 		free(aux1);
-		free(aux2);
+		free(aux2);		
 		free(st);
-
-	}*/	
+	}*/
 }
 
 /** 

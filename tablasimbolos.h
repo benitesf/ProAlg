@@ -59,7 +59,6 @@ symbol_table new_st();
  */
 void insert_symbol_st(symbol_table st, char *name);
 
-
 /**
  * @param st: tabla de símbolos
  * @param name: identificador de símbolo
