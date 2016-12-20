@@ -40,7 +40,7 @@ node* new_node_list();
 void insert_node_list(list l, node* n);
 
 /* Devuelve 1 si la lista está vacía y 0 en caso contrario */
-int isempty_list(list l);
+int is_empty_list(list l);
 
 /* Imprime el contenido de una lista por pantalla */
 void to_string_list(list l);

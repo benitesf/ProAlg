@@ -1,0 +1,11 @@
+Manual de Flex: http://flex.sourceforge.net/manual/
+Introduccion de Flex: http://web.eecs.utk.edu/~bvz/cs461/notes/flex/
+
+	flex lex.l	 
+	cc -c lex.yy.c
+	./a.out < words.txt
+
+Compilar bison:
+
+	bison -d parser.y
+

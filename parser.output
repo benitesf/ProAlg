@@ -1,0 +1,3355 @@
+Estado 66 conflictos: 8 desplazamiento/reducción
+Estado 68 conflictos: 1 desplazamiento/reducción
+Estado 109 conflictos: 6 reducción/reducción
+Estado 114 conflictos: 6 reducción/reducción
+Estado 163 conflictos: 6 desplazamiento/reducción
+Estado 164 conflictos: 6 desplazamiento/reducción
+Estado 165 conflictos: 6 reducción/reducción
+Estado 166 conflictos: 6 reducción/reducción
+Estado 167 conflictos: 6 reducción/reducción
+Estado 168 conflictos: 6 reducción/reducción
+Estado 169 conflictos: 6 reducción/reducción
+Estado 170 conflictos: 6 reducción/reducción
+Estado 171 conflictos: 6 reducción/reducción
+Estado 172 conflictos: 6 reducción/reducción
+Estado 174 conflictos: 3 desplazamiento/reducción
+Estado 178 conflictos: 1 desplazamiento/reducción
+
+
+Gramática
+
+    0 $accept: algoritmo $end
+
+    1 $@1: %empty
+
+    2 $@2: %empty
+
+    3 $@3: %empty
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg $@2 bloque_alg $@3 BI_FALGORITMO
+
+    5 cabecera_alg: decl_globales decl_a_f decl_ent_sal BI_COMENTARIO
+
+    6 bloque_alg: bloque BI_COMENTARIO
+
+    7 decl_globales: declaracion_tipo decl_globales
+    8              | declaracion_cte decl_globales
+    9              | %empty
+
+   10 decl_a_f: accion_d decl_a_f
+   11         | funcion_d decl_a_f
+   12         | %empty
+
+   13 bloque: declaraciones instrucciones
+
+   14 declaraciones: declaracion_tipo declaraciones
+   15              | declaracion_cte declaraciones
+   16              | declaracion_var declaraciones
+   17              | %empty
+
+   18 declaracion_tipo: BI_TIPO lista_d_tipo BI_FTIPO
+
+   19 declaracion_cte: BI_CONST lista_de_cte BI_FCONST
+
+   20 declaracion_var: BI_VAR lista_d_var BI_FVAR
+
+   21 lista_d_tipo: BI_ID BI_IGUAL d_tipo BI_PUNTO_COMA lista_d_tipo
+   22             | %empty
+
+   23 d_tipo: BI_TUPLA lista_campos BI_FTUPLA
+   24       | BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE d_tipo
+   25       | BI_ID
+   26       | expresion_t BI_SUBRANGO expresion_t
+   27       | BI_REF d_tipo
+   28       | tipo_base
+
+   29 expresion_t: expresion
+   30            | BI_LITERAL_CARACTER
+
+   31 lista_campos: BI_ID BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_campos
+   32             | %empty
+
+   33 tipo_base: BI_ENTERO
+   34          | BI_BOOLEANO
+   35          | BI_CARACTER
+   36          | BI_REAL
+   37          | BI_CADENA
+
+   38 lista_de_cte: BI_ID BI_IGUAL literal BI_PUNTO_COMA lista_de_cte
+   39             | %empty
+
+   40 literal: BI_LITERAL_ENTERO
+   41        | BI_LITERAL_REAL
+   42        | BI_LITERAL_BOOLEANO
+   43        | BI_LITERAL_CARACTER
+   44        | BI_LITERAL_CADENA
+
+   45 lista_d_var: lista_id BI_DOSPUNTOS BI_ID BI_PUNTO_COMA lista_d_var
+   46            | lista_id BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_d_var
+   47            | %empty
+
+   48 lista_id: BI_ID BI_COMA lista_id
+   49         | BI_ID
+
+   50 decl_ent_sal: decl_ent
+   51             | decl_ent decl_sal
+   52             | decl_sal
+
+   53 decl_ent: BI_ENT lista_d_var
+
+   54 decl_sal: BI_SAL lista_d_var
+
+   55 expresion: exp_a_b
+   56          | funcion_ll
+
+   57 exp_a_b: exp_a_b BI_SUMA exp_a_b
+   58        | exp_a_b BI_RESTA exp_a_b
+   59        | exp_a_b BI_MULT exp_a_b
+   60        | exp_a_b BI_DIVISION exp_a_b
+   61        | exp_a_b BI_MOD exp_a_b
+   62        | exp_a_b BI_DIV exp_a_b
+   63        | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI
+   64        | operando
+   65        | literal_numerico
+   66        | BI_RESTA exp_a_b
+   67        | exp_a_b BI_Y exp_a_b
+   68        | exp_a_b BI_O exp_a_b
+   69        | BI_NO exp_a_b
+   70        | BI_LITERAL_BOOLEANO
+   71        | expresion BI_IGUAL expresion
+   72        | expresion oprel expresion
+
+   73 literal_numerico: BI_LITERAL_ENTERO
+   74                 | BI_LITERAL_REAL
+
+   75 oprel: BI_MAYOR
+   76      | BI_MENOR
+   77      | BI_MAYOR_IGUAL
+   78      | BI_MENOR_IGUAL
+   79      | BI_DISTINTO
+
+   80 operando: BI_ID
+   81         | operando BI_PUNTO operando
+   82         | operando BI_CORCHETE_AP expresion BI_CORCHETE_CI
+   83         | operando BI_REF
+
+   84 instrucciones: instruccion BI_PUNTO_COMA instrucciones
+   85              | instruccion
+
+   86 instruccion: BI_CONTINUAR
+   87            | asignacion
+   88            | alternativa
+   89            | iteracion
+   90            | accion_ll
+
+   91 asignacion: operando BI_ASIGNACION expresion
+
+   92 alternativa: BI_SI expresion BI_ENTONCES instrucciones lista_opciones BI_FSI
+
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI expresion BI_ENTONCES instrucciones lista_opciones
+   94               | %empty
+
+   95 iteracion: it_cota_fija
+   96          | it_cota_exp
+
+   97 it_cota_exp: BI_MIENTRAS expresion BI_HACER instrucciones BI_FMIENTRAS
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA expresion BI_HACER instrucciones BI_FPARA
+
+   99 accion_d: BI_ACCION a_cabecera bloque BI_FACCION
+
+  100 funcion_d: BI_FUNCION f_cabecera bloque BI_DEV expresion BI_FFUNCION
+
+  101 a_cabecera: BI_ID BI_PARENTESIS_AP d_par_form BI_PARENTESIS_CI BI_PUNTO_COMA
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI BI_DEV d_tipo BI_PUNTO_COMA
+
+  103 d_par_form: d_p_form BI_PUNTO_COMA d_par_form
+  104           | %empty
+
+  105 d_p_form: BI_ENT lista_id BI_DOSPUNTOS d_tipo
+  106         | BI_SAL lista_id BI_DOSPUNTOS d_tipo
+  107         | BI_ES lista_id BI_DOSPUNTOS d_tipo
+
+  108 accion_ll: BI_ID BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+  109 funcion_ll: BI_ID BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+  110 l_ll: expresion BI_COMA l_ll
+  111     | expresion
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+error (256)
+BI_IGUAL (258) 21 38 71
+BI_MAYOR (259) 75
+BI_MENOR (260) 76
+BI_MAYOR_IGUAL (261) 77
+BI_MENOR_IGUAL (262) 78
+BI_DISTINTO (263) 79
+BI_ASIGNACION (264) 91 98
+BI_COMA (265) 48 110
+BI_PUNTO (266) 81
+BI_PUNTO_COMA (267) 21 31 38 45 46 84 101 102 103
+BI_SUBRANGO (268) 24 26
+BI_DOSPUNTOS (269) 31 45 46 105 106 107
+BI_CORCHETE_AP (270) 24 82 93
+BI_CORCHETE_CI (271) 24 82 93
+BI_PARENTESIS_AP (272) 63 101 102 108 109
+BI_PARENTESIS_CI (273) 63 101 102 108 109
+BI_SUMA (274) 57
+BI_RESTA (275) 58 66
+BI_MULT (276) 59
+BI_DIVISION (277) 60
+BI_MOD (278) 61
+BI_DIV (279) 62
+BI_Y (280) 67
+BI_O (281) 68
+BI_MENOS_UNARIO (282)
+BI_ALGORITMO (283) 4
+BI_FALGORITMO (284) 4
+BI_ACCION (285) 99
+BI_FACCION (286) 99
+BI_FUNCION (287) 100
+BI_FFUNCION (288) 100
+BI_TIPO (289) 18
+BI_FTIPO (290) 18
+BI_CONST (291) 19
+BI_FCONST (292) 19
+BI_VAR (293) 20
+BI_FVAR (294) 20
+BI_TUPLA (295) 23
+BI_FTUPLA (296) 23
+BI_MIENTRAS (297) 97
+BI_FMIENTRAS (298) 97
+BI_HACER (299) 97 98
+BI_PARA (300) 98
+BI_FPARA (301) 98
+BI_HASTA (302) 98
+BI_TABLA (303) 24
+BI_CONTINUAR (304) 86
+BI_DE (305) 24
+BI_REF (306) 27 83
+BI_ENT (307) 53 105
+BI_SAL (308) 54 106
+BI_ES (309) 107
+BI_DEV (310) 100 102
+BI_NO (311) 69
+BI_SI (312) 92
+BI_FSI (313) 92
+BI_ENTONCES (314) 92 93
+BI_ENTERO (315) 33
+BI_BOOLEANO (316) 34
+BI_CARACTER (317) 35
+BI_REAL (318) 36
+BI_CADENA (319) 37
+BI_COMENTARIO (320) 5 6
+BI_LITERAL_BOOLEANO (321) 42 70
+BI_LITERAL_CARACTER (322) 30 43
+BI_LITERAL_CADENA (323) 44
+BI_ID (324) 4 21 25 31 38 45 48 49 80 98 101 102 108 109
+BI_LITERAL_ENTERO (325) 40 73
+BI_LITERAL_REAL (326) 41 74
+
+
+No terminales con las reglas donde aparecen
+
+$accept (72)
+    en la izquierda: 0
+algoritmo (73)
+    en la izquierda: 4, en la derecha: 0
+$@1 (74)
+    en la izquierda: 1, en la derecha: 4
+$@2 (75)
+    en la izquierda: 2, en la derecha: 4
+$@3 (76)
+    en la izquierda: 3, en la derecha: 4
+cabecera_alg (77)
+    en la izquierda: 5, en la derecha: 4
+bloque_alg (78)
+    en la izquierda: 6, en la derecha: 4
+decl_globales (79)
+    en la izquierda: 7 8 9, en la derecha: 5 7 8
+decl_a_f (80)
+    en la izquierda: 10 11 12, en la derecha: 5 10 11
+bloque (81)
+    en la izquierda: 13, en la derecha: 6 99 100
+declaraciones (82)
+    en la izquierda: 14 15 16 17, en la derecha: 13 14 15 16
+declaracion_tipo (83)
+    en la izquierda: 18, en la derecha: 7 14
+declaracion_cte (84)
+    en la izquierda: 19, en la derecha: 8 15
+declaracion_var (85)
+    en la izquierda: 20, en la derecha: 16
+lista_d_tipo (86)
+    en la izquierda: 21 22, en la derecha: 18 21
+d_tipo (87)
+    en la izquierda: 23 24 25 26 27 28, en la derecha: 21 24 27 31
+    46 102 105 106 107
+expresion_t (88)
+    en la izquierda: 29 30, en la derecha: 24 26
+lista_campos (89)
+    en la izquierda: 31 32, en la derecha: 23 31
+tipo_base (90)
+    en la izquierda: 33 34 35 36 37, en la derecha: 28
+lista_de_cte (91)
+    en la izquierda: 38 39, en la derecha: 19 38
+literal (92)
+    en la izquierda: 40 41 42 43 44, en la derecha: 38
+lista_d_var (93)
+    en la izquierda: 45 46 47, en la derecha: 20 45 46 53 54 102
+lista_id (94)
+    en la izquierda: 48 49, en la derecha: 45 46 48 105 106 107
+decl_ent_sal (95)
+    en la izquierda: 50 51 52, en la derecha: 5
+decl_ent (96)
+    en la izquierda: 53, en la derecha: 50 51
+decl_sal (97)
+    en la izquierda: 54, en la derecha: 51 52
+expresion (98)
+    en la izquierda: 55 56, en la derecha: 29 71 72 82 91 92 93 97
+    98 100 110 111
+exp_a_b (99)
+    en la izquierda: 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72,
+    en la derecha: 55 57 58 59 60 61 62 63 66 67 68 69
+literal_numerico (100)
+    en la izquierda: 73 74, en la derecha: 65
+oprel (101)
+    en la izquierda: 75 76 77 78 79, en la derecha: 72
+operando (102)
+    en la izquierda: 80 81 82 83, en la derecha: 64 81 82 83 91
+instrucciones (103)
+    en la izquierda: 84 85, en la derecha: 13 84 92 93 97 98
+instruccion (104)
+    en la izquierda: 86 87 88 89 90, en la derecha: 84 85
+asignacion (105)
+    en la izquierda: 91, en la derecha: 87
+alternativa (106)
+    en la izquierda: 92, en la derecha: 88
+lista_opciones (107)
+    en la izquierda: 93 94, en la derecha: 92 93
+iteracion (108)
+    en la izquierda: 95 96, en la derecha: 89
+it_cota_exp (109)
+    en la izquierda: 97, en la derecha: 96
+it_cota_fija (110)
+    en la izquierda: 98, en la derecha: 95
+accion_d (111)
+    en la izquierda: 99, en la derecha: 10
+funcion_d (112)
+    en la izquierda: 100, en la derecha: 11
+a_cabecera (113)
+    en la izquierda: 101, en la derecha: 99
+f_cabecera (114)
+    en la izquierda: 102, en la derecha: 100
+d_par_form (115)
+    en la izquierda: 103 104, en la derecha: 101 103
+d_p_form (116)
+    en la izquierda: 105 106 107, en la derecha: 103
+accion_ll (117)
+    en la izquierda: 108, en la derecha: 90
+funcion_ll (118)
+    en la izquierda: 109, en la derecha: 56
+l_ll (119)
+    en la izquierda: 110 111, en la derecha: 108 109 110
+
+
+Estado 0
+
+    0 $accept: . algoritmo $end
+
+    BI_ALGORITMO  desplazar e ir al estado 1
+
+    algoritmo  ir al estado 2
+
+
+Estado 1
+
+    4 algoritmo: BI_ALGORITMO . BI_ID $@1 cabecera_alg $@2 bloque_alg $@3 BI_FALGORITMO
+
+    BI_ID  desplazar e ir al estado 3
+
+
+Estado 2
+
+    0 $accept: algoritmo . $end
+
+    $end  desplazar e ir al estado 4
+
+
+Estado 3
+
+    4 algoritmo: BI_ALGORITMO BI_ID . $@1 cabecera_alg $@2 bloque_alg $@3 BI_FALGORITMO
+
+    $default  reduce usando la regla 1 ($@1)
+
+    $@1  ir al estado 5
+
+
+Estado 4
+
+    0 $accept: algoritmo $end .
+
+    $default  aceptar
+
+
+Estado 5
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 . cabecera_alg $@2 bloque_alg $@3 BI_FALGORITMO
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+
+    $default  reduce usando la regla 9 (decl_globales)
+
+    cabecera_alg      ir al estado 8
+    decl_globales     ir al estado 9
+    declaracion_tipo  ir al estado 10
+    declaracion_cte   ir al estado 11
+
+
+Estado 6
+
+   18 declaracion_tipo: BI_TIPO . lista_d_tipo BI_FTIPO
+
+    BI_ID  desplazar e ir al estado 12
+
+    $default  reduce usando la regla 22 (lista_d_tipo)
+
+    lista_d_tipo  ir al estado 13
+
+
+Estado 7
+
+   19 declaracion_cte: BI_CONST . lista_de_cte BI_FCONST
+
+    BI_ID  desplazar e ir al estado 14
+
+    $default  reduce usando la regla 39 (lista_de_cte)
+
+    lista_de_cte  ir al estado 15
+
+
+Estado 8
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg . $@2 bloque_alg $@3 BI_FALGORITMO
+
+    $default  reduce usando la regla 2 ($@2)
+
+    $@2  ir al estado 16
+
+
+Estado 9
+
+    5 cabecera_alg: decl_globales . decl_a_f decl_ent_sal BI_COMENTARIO
+
+    BI_ACCION   desplazar e ir al estado 17
+    BI_FUNCION  desplazar e ir al estado 18
+
+    $default  reduce usando la regla 12 (decl_a_f)
+
+    decl_a_f   ir al estado 19
+    accion_d   ir al estado 20
+    funcion_d  ir al estado 21
+
+
+Estado 10
+
+    7 decl_globales: declaracion_tipo . decl_globales
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+
+    $default  reduce usando la regla 9 (decl_globales)
+
+    decl_globales     ir al estado 22
+    declaracion_tipo  ir al estado 10
+    declaracion_cte   ir al estado 11
+
+
+Estado 11
+
+    8 decl_globales: declaracion_cte . decl_globales
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+
+    $default  reduce usando la regla 9 (decl_globales)
+
+    decl_globales     ir al estado 23
+    declaracion_tipo  ir al estado 10
+    declaracion_cte   ir al estado 11
+
+
+Estado 12
+
+   21 lista_d_tipo: BI_ID . BI_IGUAL d_tipo BI_PUNTO_COMA lista_d_tipo
+
+    BI_IGUAL  desplazar e ir al estado 24
+
+
+Estado 13
+
+   18 declaracion_tipo: BI_TIPO lista_d_tipo . BI_FTIPO
+
+    BI_FTIPO  desplazar e ir al estado 25
+
+
+Estado 14
+
+   38 lista_de_cte: BI_ID . BI_IGUAL literal BI_PUNTO_COMA lista_de_cte
+
+    BI_IGUAL  desplazar e ir al estado 26
+
+
+Estado 15
+
+   19 declaracion_cte: BI_CONST lista_de_cte . BI_FCONST
+
+    BI_FCONST  desplazar e ir al estado 27
+
+
+Estado 16
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg $@2 . bloque_alg $@3 BI_FALGORITMO
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    bloque_alg        ir al estado 29
+    bloque            ir al estado 30
+    declaraciones     ir al estado 31
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 17
+
+   99 accion_d: BI_ACCION . a_cabecera bloque BI_FACCION
+
+    BI_ID  desplazar e ir al estado 35
+
+    a_cabecera  ir al estado 36
+
+
+Estado 18
+
+  100 funcion_d: BI_FUNCION . f_cabecera bloque BI_DEV expresion BI_FFUNCION
+
+    BI_ID  desplazar e ir al estado 37
+
+    f_cabecera  ir al estado 38
+
+
+Estado 19
+
+    5 cabecera_alg: decl_globales decl_a_f . decl_ent_sal BI_COMENTARIO
+
+    BI_ENT  desplazar e ir al estado 39
+    BI_SAL  desplazar e ir al estado 40
+
+    decl_ent_sal  ir al estado 41
+    decl_ent      ir al estado 42
+    decl_sal      ir al estado 43
+
+
+Estado 20
+
+   10 decl_a_f: accion_d . decl_a_f
+
+    BI_ACCION   desplazar e ir al estado 17
+    BI_FUNCION  desplazar e ir al estado 18
+
+    $default  reduce usando la regla 12 (decl_a_f)
+
+    decl_a_f   ir al estado 44
+    accion_d   ir al estado 20
+    funcion_d  ir al estado 21
+
+
+Estado 21
+
+   11 decl_a_f: funcion_d . decl_a_f
+
+    BI_ACCION   desplazar e ir al estado 17
+    BI_FUNCION  desplazar e ir al estado 18
+
+    $default  reduce usando la regla 12 (decl_a_f)
+
+    decl_a_f   ir al estado 45
+    accion_d   ir al estado 20
+    funcion_d  ir al estado 21
+
+
+Estado 22
+
+    7 decl_globales: declaracion_tipo decl_globales .
+
+    $default  reduce usando la regla 7 (decl_globales)
+
+
+Estado 23
+
+    8 decl_globales: declaracion_cte decl_globales .
+
+    $default  reduce usando la regla 8 (decl_globales)
+
+
+Estado 24
+
+   21 lista_d_tipo: BI_ID BI_IGUAL . d_tipo BI_PUNTO_COMA lista_d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 62
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 25
+
+   18 declaracion_tipo: BI_TIPO lista_d_tipo BI_FTIPO .
+
+    $default  reduce usando la regla 18 (declaracion_tipo)
+
+
+Estado 26
+
+   38 lista_de_cte: BI_ID BI_IGUAL . literal BI_PUNTO_COMA lista_de_cte
+
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 70
+    BI_LITERAL_CARACTER  desplazar e ir al estado 71
+    BI_LITERAL_CADENA    desplazar e ir al estado 72
+    BI_LITERAL_ENTERO    desplazar e ir al estado 73
+    BI_LITERAL_REAL      desplazar e ir al estado 74
+
+    literal  ir al estado 75
+
+
+Estado 27
+
+   19 declaracion_cte: BI_CONST lista_de_cte BI_FCONST .
+
+    $default  reduce usando la regla 19 (declaracion_cte)
+
+
+Estado 28
+
+   20 declaracion_var: BI_VAR . lista_d_var BI_FVAR
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 77
+    lista_id     ir al estado 78
+
+
+Estado 29
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg $@2 bloque_alg . $@3 BI_FALGORITMO
+
+    $default  reduce usando la regla 3 ($@3)
+
+    $@3  ir al estado 79
+
+
+Estado 30
+
+    6 bloque_alg: bloque . BI_COMENTARIO
+
+    BI_COMENTARIO  desplazar e ir al estado 80
+
+
+Estado 31
+
+   13 bloque: declaraciones . instrucciones
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 87
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 32
+
+   14 declaraciones: declaracion_tipo . declaraciones
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    declaraciones     ir al estado 95
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 33
+
+   15 declaraciones: declaracion_cte . declaraciones
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    declaraciones     ir al estado 96
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 34
+
+   16 declaraciones: declaracion_var . declaraciones
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    declaraciones     ir al estado 97
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 35
+
+  101 a_cabecera: BI_ID . BI_PARENTESIS_AP d_par_form BI_PARENTESIS_CI BI_PUNTO_COMA
+
+    BI_PARENTESIS_AP  desplazar e ir al estado 98
+
+
+Estado 36
+
+   99 accion_d: BI_ACCION a_cabecera . bloque BI_FACCION
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    bloque            ir al estado 99
+    declaraciones     ir al estado 31
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 37
+
+  102 f_cabecera: BI_ID . BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI BI_DEV d_tipo BI_PUNTO_COMA
+
+    BI_PARENTESIS_AP  desplazar e ir al estado 100
+
+
+Estado 38
+
+  100 funcion_d: BI_FUNCION f_cabecera . bloque BI_DEV expresion BI_FFUNCION
+
+    BI_TIPO   desplazar e ir al estado 6
+    BI_CONST  desplazar e ir al estado 7
+    BI_VAR    desplazar e ir al estado 28
+
+    $default  reduce usando la regla 17 (declaraciones)
+
+    bloque            ir al estado 101
+    declaraciones     ir al estado 31
+    declaracion_tipo  ir al estado 32
+    declaracion_cte   ir al estado 33
+    declaracion_var   ir al estado 34
+
+
+Estado 39
+
+   53 decl_ent: BI_ENT . lista_d_var
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 102
+    lista_id     ir al estado 78
+
+
+Estado 40
+
+   54 decl_sal: BI_SAL . lista_d_var
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 103
+    lista_id     ir al estado 78
+
+
+Estado 41
+
+    5 cabecera_alg: decl_globales decl_a_f decl_ent_sal . BI_COMENTARIO
+
+    BI_COMENTARIO  desplazar e ir al estado 104
+
+
+Estado 42
+
+   50 decl_ent_sal: decl_ent .
+   51             | decl_ent . decl_sal
+
+    BI_SAL  desplazar e ir al estado 40
+
+    $default  reduce usando la regla 50 (decl_ent_sal)
+
+    decl_sal  ir al estado 105
+
+
+Estado 43
+
+   52 decl_ent_sal: decl_sal .
+
+    $default  reduce usando la regla 52 (decl_ent_sal)
+
+
+Estado 44
+
+   10 decl_a_f: accion_d decl_a_f .
+
+    $default  reduce usando la regla 10 (decl_a_f)
+
+
+Estado 45
+
+   11 decl_a_f: funcion_d decl_a_f .
+
+    $default  reduce usando la regla 11 (decl_a_f)
+
+
+Estado 46
+
+   63 exp_a_b: BI_PARENTESIS_AP . exp_a_b BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 108
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 47
+
+   66 exp_a_b: BI_RESTA . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 109
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 48
+
+   23 d_tipo: BI_TUPLA . lista_campos BI_FTUPLA
+
+    BI_ID  desplazar e ir al estado 110
+
+    $default  reduce usando la regla 32 (lista_campos)
+
+    lista_campos  ir al estado 111
+
+
+Estado 49
+
+   24 d_tipo: BI_TABLA . BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE d_tipo
+
+    BI_CORCHETE_AP  desplazar e ir al estado 112
+
+
+Estado 50
+
+   27 d_tipo: BI_REF . d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 113
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 51
+
+   69 exp_a_b: BI_NO . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 114
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 52
+
+   33 tipo_base: BI_ENTERO .
+
+    $default  reduce usando la regla 33 (tipo_base)
+
+
+Estado 53
+
+   34 tipo_base: BI_BOOLEANO .
+
+    $default  reduce usando la regla 34 (tipo_base)
+
+
+Estado 54
+
+   35 tipo_base: BI_CARACTER .
+
+    $default  reduce usando la regla 35 (tipo_base)
+
+
+Estado 55
+
+   36 tipo_base: BI_REAL .
+
+    $default  reduce usando la regla 36 (tipo_base)
+
+
+Estado 56
+
+   37 tipo_base: BI_CADENA .
+
+    $default  reduce usando la regla 37 (tipo_base)
+
+
+Estado 57
+
+   70 exp_a_b: BI_LITERAL_BOOLEANO .
+
+    $default  reduce usando la regla 70 (exp_a_b)
+
+
+Estado 58
+
+   30 expresion_t: BI_LITERAL_CARACTER .
+
+    $default  reduce usando la regla 30 (expresion_t)
+
+
+Estado 59
+
+   25 d_tipo: BI_ID .
+   80 operando: BI_ID .
+  109 funcion_ll: BI_ID . BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP  desplazar e ir al estado 115
+
+    BI_PUNTO_COMA  reduce usando la regla 25 (d_tipo)
+    $default       reduce usando la regla 80 (operando)
+
+
+Estado 60
+
+   73 literal_numerico: BI_LITERAL_ENTERO .
+
+    $default  reduce usando la regla 73 (literal_numerico)
+
+
+Estado 61
+
+   74 literal_numerico: BI_LITERAL_REAL .
+
+    $default  reduce usando la regla 74 (literal_numerico)
+
+
+Estado 62
+
+   21 lista_d_tipo: BI_ID BI_IGUAL d_tipo . BI_PUNTO_COMA lista_d_tipo
+
+    BI_PUNTO_COMA  desplazar e ir al estado 116
+
+
+Estado 63
+
+   26 d_tipo: expresion_t . BI_SUBRANGO expresion_t
+
+    BI_SUBRANGO  desplazar e ir al estado 117
+
+
+Estado 64
+
+   28 d_tipo: tipo_base .
+
+    $default  reduce usando la regla 28 (d_tipo)
+
+
+Estado 65
+
+   29 expresion_t: expresion .
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+
+    $default  reduce usando la regla 29 (expresion_t)
+
+    oprel  ir al estado 124
+
+
+Estado 66
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_SUMA      desplazar e ir al estado 125
+    BI_RESTA     desplazar e ir al estado 126
+    BI_MULT      desplazar e ir al estado 127
+    BI_DIVISION  desplazar e ir al estado 128
+    BI_MOD       desplazar e ir al estado 129
+    BI_DIV       desplazar e ir al estado 130
+    BI_Y         desplazar e ir al estado 131
+    BI_O         desplazar e ir al estado 132
+
+    BI_SUMA      [reduce usando la regla 55 (expresion)]
+    BI_RESTA     [reduce usando la regla 55 (expresion)]
+    BI_MULT      [reduce usando la regla 55 (expresion)]
+    BI_DIVISION  [reduce usando la regla 55 (expresion)]
+    BI_MOD       [reduce usando la regla 55 (expresion)]
+    BI_DIV       [reduce usando la regla 55 (expresion)]
+    BI_Y         [reduce usando la regla 55 (expresion)]
+    BI_O         [reduce usando la regla 55 (expresion)]
+    $default     reduce usando la regla 55 (expresion)
+
+
+Estado 67
+
+   65 exp_a_b: literal_numerico .
+
+    $default  reduce usando la regla 65 (exp_a_b)
+
+
+Estado 68
+
+   64 exp_a_b: operando .
+   81 operando: operando . BI_PUNTO operando
+   82         | operando . BI_CORCHETE_AP expresion BI_CORCHETE_CI
+   83         | operando . BI_REF
+
+    BI_PUNTO        desplazar e ir al estado 133
+    BI_CORCHETE_AP  desplazar e ir al estado 134
+    BI_REF          desplazar e ir al estado 135
+
+    BI_CORCHETE_AP  [reduce usando la regla 64 (exp_a_b)]
+    $default        reduce usando la regla 64 (exp_a_b)
+
+
+Estado 69
+
+   56 expresion: funcion_ll .
+
+    $default  reduce usando la regla 56 (expresion)
+
+
+Estado 70
+
+   42 literal: BI_LITERAL_BOOLEANO .
+
+    $default  reduce usando la regla 42 (literal)
+
+
+Estado 71
+
+   43 literal: BI_LITERAL_CARACTER .
+
+    $default  reduce usando la regla 43 (literal)
+
+
+Estado 72
+
+   44 literal: BI_LITERAL_CADENA .
+
+    $default  reduce usando la regla 44 (literal)
+
+
+Estado 73
+
+   40 literal: BI_LITERAL_ENTERO .
+
+    $default  reduce usando la regla 40 (literal)
+
+
+Estado 74
+
+   41 literal: BI_LITERAL_REAL .
+
+    $default  reduce usando la regla 41 (literal)
+
+
+Estado 75
+
+   38 lista_de_cte: BI_ID BI_IGUAL literal . BI_PUNTO_COMA lista_de_cte
+
+    BI_PUNTO_COMA  desplazar e ir al estado 136
+
+
+Estado 76
+
+   48 lista_id: BI_ID . BI_COMA lista_id
+   49         | BI_ID .
+
+    BI_COMA  desplazar e ir al estado 137
+
+    $default  reduce usando la regla 49 (lista_id)
+
+
+Estado 77
+
+   20 declaracion_var: BI_VAR lista_d_var . BI_FVAR
+
+    BI_FVAR  desplazar e ir al estado 138
+
+
+Estado 78
+
+   45 lista_d_var: lista_id . BI_DOSPUNTOS BI_ID BI_PUNTO_COMA lista_d_var
+   46            | lista_id . BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_d_var
+
+    BI_DOSPUNTOS  desplazar e ir al estado 139
+
+
+Estado 79
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg $@2 bloque_alg $@3 . BI_FALGORITMO
+
+    BI_FALGORITMO  desplazar e ir al estado 140
+
+
+Estado 80
+
+    6 bloque_alg: bloque BI_COMENTARIO .
+
+    $default  reduce usando la regla 6 (bloque_alg)
+
+
+Estado 81
+
+   97 it_cota_exp: BI_MIENTRAS . expresion BI_HACER instrucciones BI_FMIENTRAS
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 141
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 82
+
+   98 it_cota_fija: BI_PARA . BI_ID BI_ASIGNACION expresion BI_HASTA expresion BI_HACER instrucciones BI_FPARA
+
+    BI_ID  desplazar e ir al estado 142
+
+
+Estado 83
+
+   86 instruccion: BI_CONTINUAR .
+
+    $default  reduce usando la regla 86 (instruccion)
+
+
+Estado 84
+
+   92 alternativa: BI_SI . expresion BI_ENTONCES instrucciones lista_opciones BI_FSI
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 143
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 85
+
+   80 operando: BI_ID .
+  108 accion_ll: BI_ID . BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP  desplazar e ir al estado 144
+
+    $default  reduce usando la regla 80 (operando)
+
+
+Estado 86
+
+   81 operando: operando . BI_PUNTO operando
+   82         | operando . BI_CORCHETE_AP expresion BI_CORCHETE_CI
+   83         | operando . BI_REF
+   91 asignacion: operando . BI_ASIGNACION expresion
+
+    BI_ASIGNACION   desplazar e ir al estado 145
+    BI_PUNTO        desplazar e ir al estado 133
+    BI_CORCHETE_AP  desplazar e ir al estado 134
+    BI_REF          desplazar e ir al estado 135
+
+
+Estado 87
+
+   13 bloque: declaraciones instrucciones .
+
+    $default  reduce usando la regla 13 (bloque)
+
+
+Estado 88
+
+   84 instrucciones: instruccion . BI_PUNTO_COMA instrucciones
+   85              | instruccion .
+
+    BI_PUNTO_COMA  desplazar e ir al estado 146
+
+    $default  reduce usando la regla 85 (instrucciones)
+
+
+Estado 89
+
+   87 instruccion: asignacion .
+
+    $default  reduce usando la regla 87 (instruccion)
+
+
+Estado 90
+
+   88 instruccion: alternativa .
+
+    $default  reduce usando la regla 88 (instruccion)
+
+
+Estado 91
+
+   89 instruccion: iteracion .
+
+    $default  reduce usando la regla 89 (instruccion)
+
+
+Estado 92
+
+   96 iteracion: it_cota_exp .
+
+    $default  reduce usando la regla 96 (iteracion)
+
+
+Estado 93
+
+   95 iteracion: it_cota_fija .
+
+    $default  reduce usando la regla 95 (iteracion)
+
+
+Estado 94
+
+   90 instruccion: accion_ll .
+
+    $default  reduce usando la regla 90 (instruccion)
+
+
+Estado 95
+
+   14 declaraciones: declaracion_tipo declaraciones .
+
+    $default  reduce usando la regla 14 (declaraciones)
+
+
+Estado 96
+
+   15 declaraciones: declaracion_cte declaraciones .
+
+    $default  reduce usando la regla 15 (declaraciones)
+
+
+Estado 97
+
+   16 declaraciones: declaracion_var declaraciones .
+
+    $default  reduce usando la regla 16 (declaraciones)
+
+
+Estado 98
+
+  101 a_cabecera: BI_ID BI_PARENTESIS_AP . d_par_form BI_PARENTESIS_CI BI_PUNTO_COMA
+
+    BI_ENT  desplazar e ir al estado 147
+    BI_SAL  desplazar e ir al estado 148
+    BI_ES   desplazar e ir al estado 149
+
+    $default  reduce usando la regla 104 (d_par_form)
+
+    d_par_form  ir al estado 150
+    d_p_form    ir al estado 151
+
+
+Estado 99
+
+   99 accion_d: BI_ACCION a_cabecera bloque . BI_FACCION
+
+    BI_FACCION  desplazar e ir al estado 152
+
+
+Estado 100
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP . lista_d_var BI_PARENTESIS_CI BI_DEV d_tipo BI_PUNTO_COMA
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 153
+    lista_id     ir al estado 78
+
+
+Estado 101
+
+  100 funcion_d: BI_FUNCION f_cabecera bloque . BI_DEV expresion BI_FFUNCION
+
+    BI_DEV  desplazar e ir al estado 154
+
+
+Estado 102
+
+   53 decl_ent: BI_ENT lista_d_var .
+
+    $default  reduce usando la regla 53 (decl_ent)
+
+
+Estado 103
+
+   54 decl_sal: BI_SAL lista_d_var .
+
+    $default  reduce usando la regla 54 (decl_sal)
+
+
+Estado 104
+
+    5 cabecera_alg: decl_globales decl_a_f decl_ent_sal BI_COMENTARIO .
+
+    $default  reduce usando la regla 5 (cabecera_alg)
+
+
+Estado 105
+
+   51 decl_ent_sal: decl_ent decl_sal .
+
+    $default  reduce usando la regla 51 (decl_ent_sal)
+
+
+Estado 106
+
+   80 operando: BI_ID .
+  109 funcion_ll: BI_ID . BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP  desplazar e ir al estado 115
+
+    $default  reduce usando la regla 80 (operando)
+
+
+Estado 107
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+
+    oprel  ir al estado 124
+
+
+Estado 108
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   63        | BI_PARENTESIS_AP exp_a_b . BI_PARENTESIS_CI
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_PARENTESIS_CI  desplazar e ir al estado 155
+    BI_SUMA           desplazar e ir al estado 125
+    BI_RESTA          desplazar e ir al estado 126
+    BI_MULT           desplazar e ir al estado 127
+    BI_DIVISION       desplazar e ir al estado 128
+    BI_MOD            desplazar e ir al estado 129
+    BI_DIV            desplazar e ir al estado 130
+    BI_Y              desplazar e ir al estado 131
+    BI_O              desplazar e ir al estado 132
+
+    $default  reduce usando la regla 55 (expresion)
+
+
+Estado 109
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   66        | BI_RESTA exp_a_b .
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 66 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 66 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 66 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 66 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 66 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 66 (exp_a_b)]
+    $default        reduce usando la regla 66 (exp_a_b)
+
+
+Estado 110
+
+   31 lista_campos: BI_ID . BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_campos
+
+    BI_DOSPUNTOS  desplazar e ir al estado 156
+
+
+Estado 111
+
+   23 d_tipo: BI_TUPLA lista_campos . BI_FTUPLA
+
+    BI_FTUPLA  desplazar e ir al estado 157
+
+
+Estado 112
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP . expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion_t       ir al estado 158
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 113
+
+   27 d_tipo: BI_REF d_tipo .
+
+    $default  reduce usando la regla 27 (d_tipo)
+
+
+Estado 114
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+   69        | BI_NO exp_a_b .
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 69 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 69 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 69 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 69 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 69 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 69 (exp_a_b)]
+    $default        reduce usando la regla 69 (exp_a_b)
+
+
+Estado 115
+
+  109 funcion_ll: BI_ID BI_PARENTESIS_AP . l_ll BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 159
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+    l_ll              ir al estado 160
+
+
+Estado 116
+
+   21 lista_d_tipo: BI_ID BI_IGUAL d_tipo BI_PUNTO_COMA . lista_d_tipo
+
+    BI_ID  desplazar e ir al estado 12
+
+    $default  reduce usando la regla 22 (lista_d_tipo)
+
+    lista_d_tipo  ir al estado 161
+
+
+Estado 117
+
+   26 d_tipo: expresion_t BI_SUBRANGO . expresion_t
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion_t       ir al estado 162
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 118
+
+   71 exp_a_b: expresion BI_IGUAL . expresion
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 163
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 119
+
+   75 oprel: BI_MAYOR .
+
+    $default  reduce usando la regla 75 (oprel)
+
+
+Estado 120
+
+   76 oprel: BI_MENOR .
+
+    $default  reduce usando la regla 76 (oprel)
+
+
+Estado 121
+
+   77 oprel: BI_MAYOR_IGUAL .
+
+    $default  reduce usando la regla 77 (oprel)
+
+
+Estado 122
+
+   78 oprel: BI_MENOR_IGUAL .
+
+    $default  reduce usando la regla 78 (oprel)
+
+
+Estado 123
+
+   79 oprel: BI_DISTINTO .
+
+    $default  reduce usando la regla 79 (oprel)
+
+
+Estado 124
+
+   72 exp_a_b: expresion oprel . expresion
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 164
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 125
+
+   57 exp_a_b: exp_a_b BI_SUMA . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 165
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 126
+
+   58 exp_a_b: exp_a_b BI_RESTA . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 166
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 127
+
+   59 exp_a_b: exp_a_b BI_MULT . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 167
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 128
+
+   60 exp_a_b: exp_a_b BI_DIVISION . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 168
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 129
+
+   61 exp_a_b: exp_a_b BI_MOD . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 169
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 130
+
+   62 exp_a_b: exp_a_b BI_DIV . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 170
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 131
+
+   67 exp_a_b: exp_a_b BI_Y . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 171
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 132
+
+   68 exp_a_b: exp_a_b BI_O . exp_a_b
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 107
+    exp_a_b           ir al estado 172
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 133
+
+   81 operando: operando BI_PUNTO . operando
+
+    BI_ID  desplazar e ir al estado 173
+
+    operando  ir al estado 174
+
+
+Estado 134
+
+   82 operando: operando BI_CORCHETE_AP . expresion BI_CORCHETE_CI
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 175
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 135
+
+   83 operando: operando BI_REF .
+
+    $default  reduce usando la regla 83 (operando)
+
+
+Estado 136
+
+   38 lista_de_cte: BI_ID BI_IGUAL literal BI_PUNTO_COMA . lista_de_cte
+
+    BI_ID  desplazar e ir al estado 14
+
+    $default  reduce usando la regla 39 (lista_de_cte)
+
+    lista_de_cte  ir al estado 176
+
+
+Estado 137
+
+   48 lista_id: BI_ID BI_COMA . lista_id
+
+    BI_ID  desplazar e ir al estado 76
+
+    lista_id  ir al estado 177
+
+
+Estado 138
+
+   20 declaracion_var: BI_VAR lista_d_var BI_FVAR .
+
+    $default  reduce usando la regla 20 (declaracion_var)
+
+
+Estado 139
+
+   45 lista_d_var: lista_id BI_DOSPUNTOS . BI_ID BI_PUNTO_COMA lista_d_var
+   46            | lista_id BI_DOSPUNTOS . d_tipo BI_PUNTO_COMA lista_d_var
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 178
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 179
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 140
+
+    4 algoritmo: BI_ALGORITMO BI_ID $@1 cabecera_alg $@2 bloque_alg $@3 BI_FALGORITMO .
+
+    $default  reduce usando la regla 4 (algoritmo)
+
+
+Estado 141
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   97 it_cota_exp: BI_MIENTRAS expresion . BI_HACER instrucciones BI_FMIENTRAS
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_HACER        desplazar e ir al estado 180
+
+    oprel  ir al estado 124
+
+
+Estado 142
+
+   98 it_cota_fija: BI_PARA BI_ID . BI_ASIGNACION expresion BI_HASTA expresion BI_HACER instrucciones BI_FPARA
+
+    BI_ASIGNACION  desplazar e ir al estado 181
+
+
+Estado 143
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   92 alternativa: BI_SI expresion . BI_ENTONCES instrucciones lista_opciones BI_FSI
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_ENTONCES     desplazar e ir al estado 182
+
+    oprel  ir al estado 124
+
+
+Estado 144
+
+  108 accion_ll: BI_ID BI_PARENTESIS_AP . l_ll BI_PARENTESIS_CI
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 159
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+    l_ll              ir al estado 183
+
+
+Estado 145
+
+   91 asignacion: operando BI_ASIGNACION . expresion
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 184
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 146
+
+   84 instrucciones: instruccion BI_PUNTO_COMA . instrucciones
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 185
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 147
+
+  105 d_p_form: BI_ENT . lista_id BI_DOSPUNTOS d_tipo
+
+    BI_ID  desplazar e ir al estado 76
+
+    lista_id  ir al estado 186
+
+
+Estado 148
+
+  106 d_p_form: BI_SAL . lista_id BI_DOSPUNTOS d_tipo
+
+    BI_ID  desplazar e ir al estado 76
+
+    lista_id  ir al estado 187
+
+
+Estado 149
+
+  107 d_p_form: BI_ES . lista_id BI_DOSPUNTOS d_tipo
+
+    BI_ID  desplazar e ir al estado 76
+
+    lista_id  ir al estado 188
+
+
+Estado 150
+
+  101 a_cabecera: BI_ID BI_PARENTESIS_AP d_par_form . BI_PARENTESIS_CI BI_PUNTO_COMA
+
+    BI_PARENTESIS_CI  desplazar e ir al estado 189
+
+
+Estado 151
+
+  103 d_par_form: d_p_form . BI_PUNTO_COMA d_par_form
+
+    BI_PUNTO_COMA  desplazar e ir al estado 190
+
+
+Estado 152
+
+   99 accion_d: BI_ACCION a_cabecera bloque BI_FACCION .
+
+    $default  reduce usando la regla 99 (accion_d)
+
+
+Estado 153
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var . BI_PARENTESIS_CI BI_DEV d_tipo BI_PUNTO_COMA
+
+    BI_PARENTESIS_CI  desplazar e ir al estado 191
+
+
+Estado 154
+
+  100 funcion_d: BI_FUNCION f_cabecera bloque BI_DEV . expresion BI_FFUNCION
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 192
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 155
+
+   63 exp_a_b: BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI .
+
+    $default  reduce usando la regla 63 (exp_a_b)
+
+
+Estado 156
+
+   31 lista_campos: BI_ID BI_DOSPUNTOS . d_tipo BI_PUNTO_COMA lista_campos
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 193
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 157
+
+   23 d_tipo: BI_TUPLA lista_campos BI_FTUPLA .
+
+    $default  reduce usando la regla 23 (d_tipo)
+
+
+Estado 158
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t . BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE d_tipo
+
+    BI_SUBRANGO  desplazar e ir al estado 194
+
+
+Estado 159
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+  110 l_ll: expresion . BI_COMA l_ll
+  111     | expresion .
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_COMA         desplazar e ir al estado 195
+
+    $default  reduce usando la regla 111 (l_ll)
+
+    oprel  ir al estado 124
+
+
+Estado 160
+
+  109 funcion_ll: BI_ID BI_PARENTESIS_AP l_ll . BI_PARENTESIS_CI
+
+    BI_PARENTESIS_CI  desplazar e ir al estado 196
+
+
+Estado 161
+
+   21 lista_d_tipo: BI_ID BI_IGUAL d_tipo BI_PUNTO_COMA lista_d_tipo .
+
+    $default  reduce usando la regla 21 (lista_d_tipo)
+
+
+Estado 162
+
+   26 d_tipo: expresion_t BI_SUBRANGO expresion_t .
+
+    $default  reduce usando la regla 26 (d_tipo)
+
+
+Estado 163
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   71        | expresion BI_IGUAL expresion .
+   72        | expresion . oprel expresion
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+
+    BI_IGUAL        [reduce usando la regla 71 (exp_a_b)]
+    BI_MAYOR        [reduce usando la regla 71 (exp_a_b)]
+    BI_MENOR        [reduce usando la regla 71 (exp_a_b)]
+    BI_MAYOR_IGUAL  [reduce usando la regla 71 (exp_a_b)]
+    BI_MENOR_IGUAL  [reduce usando la regla 71 (exp_a_b)]
+    BI_DISTINTO     [reduce usando la regla 71 (exp_a_b)]
+    $default        reduce usando la regla 71 (exp_a_b)
+
+    oprel  ir al estado 124
+
+
+Estado 164
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   72        | expresion oprel expresion .
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+
+    BI_IGUAL        [reduce usando la regla 72 (exp_a_b)]
+    BI_MAYOR        [reduce usando la regla 72 (exp_a_b)]
+    BI_MENOR        [reduce usando la regla 72 (exp_a_b)]
+    BI_MAYOR_IGUAL  [reduce usando la regla 72 (exp_a_b)]
+    BI_MENOR_IGUAL  [reduce usando la regla 72 (exp_a_b)]
+    BI_DISTINTO     [reduce usando la regla 72 (exp_a_b)]
+    $default        reduce usando la regla 72 (exp_a_b)
+
+    oprel  ir al estado 124
+
+
+Estado 165
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   57        | exp_a_b BI_SUMA exp_a_b .
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_MULT      desplazar e ir al estado 127
+    BI_DIVISION  desplazar e ir al estado 128
+    BI_MOD       desplazar e ir al estado 129
+    BI_DIV       desplazar e ir al estado 130
+    BI_Y         desplazar e ir al estado 131
+    BI_O         desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 57 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 57 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 57 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 57 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 57 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 57 (exp_a_b)]
+    $default        reduce usando la regla 57 (exp_a_b)
+
+
+Estado 166
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   58        | exp_a_b BI_RESTA exp_a_b .
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_MULT      desplazar e ir al estado 127
+    BI_DIVISION  desplazar e ir al estado 128
+    BI_MOD       desplazar e ir al estado 129
+    BI_DIV       desplazar e ir al estado 130
+    BI_Y         desplazar e ir al estado 131
+    BI_O         desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 58 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 58 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 58 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 58 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 58 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 58 (exp_a_b)]
+    $default        reduce usando la regla 58 (exp_a_b)
+
+
+Estado 167
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   59        | exp_a_b BI_MULT exp_a_b .
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_Y  desplazar e ir al estado 131
+    BI_O  desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 59 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 59 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 59 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 59 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 59 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 59 (exp_a_b)]
+    $default        reduce usando la regla 59 (exp_a_b)
+
+
+Estado 168
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   60        | exp_a_b BI_DIVISION exp_a_b .
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_Y  desplazar e ir al estado 131
+    BI_O  desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 60 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 60 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 60 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 60 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 60 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 60 (exp_a_b)]
+    $default        reduce usando la regla 60 (exp_a_b)
+
+
+Estado 169
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   61        | exp_a_b BI_MOD exp_a_b .
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_Y  desplazar e ir al estado 131
+    BI_O  desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 61 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 61 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 61 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 61 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 61 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 61 (exp_a_b)]
+    $default        reduce usando la regla 61 (exp_a_b)
+
+
+Estado 170
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   62        | exp_a_b BI_DIV exp_a_b .
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_Y  desplazar e ir al estado 131
+    BI_O  desplazar e ir al estado 132
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 62 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 62 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 62 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 62 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 62 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 62 (exp_a_b)]
+    $default        reduce usando la regla 62 (exp_a_b)
+
+
+Estado 171
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   67        | exp_a_b BI_Y exp_a_b .
+   68        | exp_a_b . BI_O exp_a_b
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 67 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 67 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 67 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 67 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 67 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 67 (exp_a_b)]
+    $default        reduce usando la regla 67 (exp_a_b)
+
+
+Estado 172
+
+   55 expresion: exp_a_b .
+   57 exp_a_b: exp_a_b . BI_SUMA exp_a_b
+   58        | exp_a_b . BI_RESTA exp_a_b
+   59        | exp_a_b . BI_MULT exp_a_b
+   60        | exp_a_b . BI_DIVISION exp_a_b
+   61        | exp_a_b . BI_MOD exp_a_b
+   62        | exp_a_b . BI_DIV exp_a_b
+   67        | exp_a_b . BI_Y exp_a_b
+   68        | exp_a_b . BI_O exp_a_b
+   68        | exp_a_b BI_O exp_a_b .
+
+    BI_IGUAL        reduce usando la regla 55 (expresion)
+    BI_IGUAL        [reduce usando la regla 68 (exp_a_b)]
+    BI_MAYOR        reduce usando la regla 55 (expresion)
+    BI_MAYOR        [reduce usando la regla 68 (exp_a_b)]
+    BI_MENOR        reduce usando la regla 55 (expresion)
+    BI_MENOR        [reduce usando la regla 68 (exp_a_b)]
+    BI_MAYOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MAYOR_IGUAL  [reduce usando la regla 68 (exp_a_b)]
+    BI_MENOR_IGUAL  reduce usando la regla 55 (expresion)
+    BI_MENOR_IGUAL  [reduce usando la regla 68 (exp_a_b)]
+    BI_DISTINTO     reduce usando la regla 55 (expresion)
+    BI_DISTINTO     [reduce usando la regla 68 (exp_a_b)]
+    $default        reduce usando la regla 68 (exp_a_b)
+
+
+Estado 173
+
+   80 operando: BI_ID .
+
+    $default  reduce usando la regla 80 (operando)
+
+
+Estado 174
+
+   81 operando: operando . BI_PUNTO operando
+   81         | operando BI_PUNTO operando .
+   82         | operando . BI_CORCHETE_AP expresion BI_CORCHETE_CI
+   83         | operando . BI_REF
+
+    BI_PUNTO        desplazar e ir al estado 133
+    BI_CORCHETE_AP  desplazar e ir al estado 134
+    BI_REF          desplazar e ir al estado 135
+
+    BI_PUNTO        [reduce usando la regla 81 (operando)]
+    BI_CORCHETE_AP  [reduce usando la regla 81 (operando)]
+    BI_REF          [reduce usando la regla 81 (operando)]
+    $default        reduce usando la regla 81 (operando)
+
+
+Estado 175
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   82 operando: operando BI_CORCHETE_AP expresion . BI_CORCHETE_CI
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_CORCHETE_CI  desplazar e ir al estado 197
+
+    oprel  ir al estado 124
+
+
+Estado 176
+
+   38 lista_de_cte: BI_ID BI_IGUAL literal BI_PUNTO_COMA lista_de_cte .
+
+    $default  reduce usando la regla 38 (lista_de_cte)
+
+
+Estado 177
+
+   48 lista_id: BI_ID BI_COMA lista_id .
+
+    $default  reduce usando la regla 48 (lista_id)
+
+
+Estado 178
+
+   25 d_tipo: BI_ID .
+   45 lista_d_var: lista_id BI_DOSPUNTOS BI_ID . BI_PUNTO_COMA lista_d_var
+   80 operando: BI_ID .
+  109 funcion_ll: BI_ID . BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI
+
+    BI_PUNTO_COMA     desplazar e ir al estado 198
+    BI_PARENTESIS_AP  desplazar e ir al estado 115
+
+    BI_PUNTO_COMA  [reduce usando la regla 25 (d_tipo)]
+    $default       reduce usando la regla 80 (operando)
+
+
+Estado 179
+
+   46 lista_d_var: lista_id BI_DOSPUNTOS d_tipo . BI_PUNTO_COMA lista_d_var
+
+    BI_PUNTO_COMA  desplazar e ir al estado 199
+
+
+Estado 180
+
+   97 it_cota_exp: BI_MIENTRAS expresion BI_HACER . instrucciones BI_FMIENTRAS
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 200
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 181
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION . expresion BI_HASTA expresion BI_HACER instrucciones BI_FPARA
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 201
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 182
+
+   92 alternativa: BI_SI expresion BI_ENTONCES . instrucciones lista_opciones BI_FSI
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 202
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 183
+
+  108 accion_ll: BI_ID BI_PARENTESIS_AP l_ll . BI_PARENTESIS_CI
+
+    BI_PARENTESIS_CI  desplazar e ir al estado 203
+
+
+Estado 184
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   91 asignacion: operando BI_ASIGNACION expresion .
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+
+    $default  reduce usando la regla 91 (asignacion)
+
+    oprel  ir al estado 124
+
+
+Estado 185
+
+   84 instrucciones: instruccion BI_PUNTO_COMA instrucciones .
+
+    $default  reduce usando la regla 84 (instrucciones)
+
+
+Estado 186
+
+  105 d_p_form: BI_ENT lista_id . BI_DOSPUNTOS d_tipo
+
+    BI_DOSPUNTOS  desplazar e ir al estado 204
+
+
+Estado 187
+
+  106 d_p_form: BI_SAL lista_id . BI_DOSPUNTOS d_tipo
+
+    BI_DOSPUNTOS  desplazar e ir al estado 205
+
+
+Estado 188
+
+  107 d_p_form: BI_ES lista_id . BI_DOSPUNTOS d_tipo
+
+    BI_DOSPUNTOS  desplazar e ir al estado 206
+
+
+Estado 189
+
+  101 a_cabecera: BI_ID BI_PARENTESIS_AP d_par_form BI_PARENTESIS_CI . BI_PUNTO_COMA
+
+    BI_PUNTO_COMA  desplazar e ir al estado 207
+
+
+Estado 190
+
+  103 d_par_form: d_p_form BI_PUNTO_COMA . d_par_form
+
+    BI_ENT  desplazar e ir al estado 147
+    BI_SAL  desplazar e ir al estado 148
+    BI_ES   desplazar e ir al estado 149
+
+    $default  reduce usando la regla 104 (d_par_form)
+
+    d_par_form  ir al estado 208
+    d_p_form    ir al estado 151
+
+
+Estado 191
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI . BI_DEV d_tipo BI_PUNTO_COMA
+
+    BI_DEV  desplazar e ir al estado 209
+
+
+Estado 192
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+  100 funcion_d: BI_FUNCION f_cabecera bloque BI_DEV expresion . BI_FFUNCION
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_FFUNCION     desplazar e ir al estado 210
+
+    oprel  ir al estado 124
+
+
+Estado 193
+
+   31 lista_campos: BI_ID BI_DOSPUNTOS d_tipo . BI_PUNTO_COMA lista_campos
+
+    BI_PUNTO_COMA  desplazar e ir al estado 211
+
+
+Estado 194
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO . expresion_t BI_CORCHETE_CI BI_DE d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion_t       ir al estado 212
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 195
+
+  110 l_ll: expresion BI_COMA . l_ll
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 159
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+    l_ll              ir al estado 213
+
+
+Estado 196
+
+  109 funcion_ll: BI_ID BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI .
+
+    $default  reduce usando la regla 109 (funcion_ll)
+
+
+Estado 197
+
+   82 operando: operando BI_CORCHETE_AP expresion BI_CORCHETE_CI .
+
+    $default  reduce usando la regla 82 (operando)
+
+
+Estado 198
+
+   45 lista_d_var: lista_id BI_DOSPUNTOS BI_ID BI_PUNTO_COMA . lista_d_var
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 214
+    lista_id     ir al estado 78
+
+
+Estado 199
+
+   46 lista_d_var: lista_id BI_DOSPUNTOS d_tipo BI_PUNTO_COMA . lista_d_var
+
+    BI_ID  desplazar e ir al estado 76
+
+    $default  reduce usando la regla 47 (lista_d_var)
+
+    lista_d_var  ir al estado 215
+    lista_id     ir al estado 78
+
+
+Estado 200
+
+   97 it_cota_exp: BI_MIENTRAS expresion BI_HACER instrucciones . BI_FMIENTRAS
+
+    BI_FMIENTRAS  desplazar e ir al estado 216
+
+
+Estado 201
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion . BI_HASTA expresion BI_HACER instrucciones BI_FPARA
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_HASTA        desplazar e ir al estado 217
+
+    oprel  ir al estado 124
+
+
+Estado 202
+
+   92 alternativa: BI_SI expresion BI_ENTONCES instrucciones . lista_opciones BI_FSI
+
+    BI_CORCHETE_AP  desplazar e ir al estado 218
+
+    $default  reduce usando la regla 94 (lista_opciones)
+
+    lista_opciones  ir al estado 219
+
+
+Estado 203
+
+  108 accion_ll: BI_ID BI_PARENTESIS_AP l_ll BI_PARENTESIS_CI .
+
+    $default  reduce usando la regla 108 (accion_ll)
+
+
+Estado 204
+
+  105 d_p_form: BI_ENT lista_id BI_DOSPUNTOS . d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 220
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 205
+
+  106 d_p_form: BI_SAL lista_id BI_DOSPUNTOS . d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 221
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 206
+
+  107 d_p_form: BI_ES lista_id BI_DOSPUNTOS . d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 222
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 207
+
+  101 a_cabecera: BI_ID BI_PARENTESIS_AP d_par_form BI_PARENTESIS_CI BI_PUNTO_COMA .
+
+    $default  reduce usando la regla 101 (a_cabecera)
+
+
+Estado 208
+
+  103 d_par_form: d_p_form BI_PUNTO_COMA d_par_form .
+
+    $default  reduce usando la regla 103 (d_par_form)
+
+
+Estado 209
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI BI_DEV . d_tipo BI_PUNTO_COMA
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 223
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 210
+
+  100 funcion_d: BI_FUNCION f_cabecera bloque BI_DEV expresion BI_FFUNCION .
+
+    $default  reduce usando la regla 100 (funcion_d)
+
+
+Estado 211
+
+   31 lista_campos: BI_ID BI_DOSPUNTOS d_tipo BI_PUNTO_COMA . lista_campos
+
+    BI_ID  desplazar e ir al estado 110
+
+    $default  reduce usando la regla 32 (lista_campos)
+
+    lista_campos  ir al estado 224
+
+
+Estado 212
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t . BI_CORCHETE_CI BI_DE d_tipo
+
+    BI_CORCHETE_CI  desplazar e ir al estado 225
+
+
+Estado 213
+
+  110 l_ll: expresion BI_COMA l_ll .
+
+    $default  reduce usando la regla 110 (l_ll)
+
+
+Estado 214
+
+   45 lista_d_var: lista_id BI_DOSPUNTOS BI_ID BI_PUNTO_COMA lista_d_var .
+
+    $default  reduce usando la regla 45 (lista_d_var)
+
+
+Estado 215
+
+   46 lista_d_var: lista_id BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_d_var .
+
+    $default  reduce usando la regla 46 (lista_d_var)
+
+
+Estado 216
+
+   97 it_cota_exp: BI_MIENTRAS expresion BI_HACER instrucciones BI_FMIENTRAS .
+
+    $default  reduce usando la regla 97 (it_cota_exp)
+
+
+Estado 217
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA . expresion BI_HACER instrucciones BI_FPARA
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 226
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 218
+
+   93 lista_opciones: BI_CORCHETE_AP . BI_CORCHETE_CI expresion BI_ENTONCES instrucciones lista_opciones
+
+    BI_CORCHETE_CI  desplazar e ir al estado 227
+
+
+Estado 219
+
+   92 alternativa: BI_SI expresion BI_ENTONCES instrucciones lista_opciones . BI_FSI
+
+    BI_FSI  desplazar e ir al estado 228
+
+
+Estado 220
+
+  105 d_p_form: BI_ENT lista_id BI_DOSPUNTOS d_tipo .
+
+    $default  reduce usando la regla 105 (d_p_form)
+
+
+Estado 221
+
+  106 d_p_form: BI_SAL lista_id BI_DOSPUNTOS d_tipo .
+
+    $default  reduce usando la regla 106 (d_p_form)
+
+
+Estado 222
+
+  107 d_p_form: BI_ES lista_id BI_DOSPUNTOS d_tipo .
+
+    $default  reduce usando la regla 107 (d_p_form)
+
+
+Estado 223
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI BI_DEV d_tipo . BI_PUNTO_COMA
+
+    BI_PUNTO_COMA  desplazar e ir al estado 229
+
+
+Estado 224
+
+   31 lista_campos: BI_ID BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_campos .
+
+    $default  reduce usando la regla 31 (lista_campos)
+
+
+Estado 225
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI . BI_DE d_tipo
+
+    BI_DE  desplazar e ir al estado 230
+
+
+Estado 226
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA expresion . BI_HACER instrucciones BI_FPARA
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_HACER        desplazar e ir al estado 231
+
+    oprel  ir al estado 124
+
+
+Estado 227
+
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI . expresion BI_ENTONCES instrucciones lista_opciones
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_NO                desplazar e ir al estado 51
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_ID                desplazar e ir al estado 106
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    expresion         ir al estado 232
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 228
+
+   92 alternativa: BI_SI expresion BI_ENTONCES instrucciones lista_opciones BI_FSI .
+
+    $default  reduce usando la regla 92 (alternativa)
+
+
+Estado 229
+
+  102 f_cabecera: BI_ID BI_PARENTESIS_AP lista_d_var BI_PARENTESIS_CI BI_DEV d_tipo BI_PUNTO_COMA .
+
+    $default  reduce usando la regla 102 (f_cabecera)
+
+
+Estado 230
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE . d_tipo
+
+    BI_PARENTESIS_AP     desplazar e ir al estado 46
+    BI_RESTA             desplazar e ir al estado 47
+    BI_TUPLA             desplazar e ir al estado 48
+    BI_TABLA             desplazar e ir al estado 49
+    BI_REF               desplazar e ir al estado 50
+    BI_NO                desplazar e ir al estado 51
+    BI_ENTERO            desplazar e ir al estado 52
+    BI_BOOLEANO          desplazar e ir al estado 53
+    BI_CARACTER          desplazar e ir al estado 54
+    BI_REAL              desplazar e ir al estado 55
+    BI_CADENA            desplazar e ir al estado 56
+    BI_LITERAL_BOOLEANO  desplazar e ir al estado 57
+    BI_LITERAL_CARACTER  desplazar e ir al estado 58
+    BI_ID                desplazar e ir al estado 59
+    BI_LITERAL_ENTERO    desplazar e ir al estado 60
+    BI_LITERAL_REAL      desplazar e ir al estado 61
+
+    d_tipo            ir al estado 233
+    expresion_t       ir al estado 63
+    tipo_base         ir al estado 64
+    expresion         ir al estado 65
+    exp_a_b           ir al estado 66
+    literal_numerico  ir al estado 67
+    operando          ir al estado 68
+    funcion_ll        ir al estado 69
+
+
+Estado 231
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA expresion BI_HACER . instrucciones BI_FPARA
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 234
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 232
+
+   71 exp_a_b: expresion . BI_IGUAL expresion
+   72        | expresion . oprel expresion
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI expresion . BI_ENTONCES instrucciones lista_opciones
+
+    BI_IGUAL        desplazar e ir al estado 118
+    BI_MAYOR        desplazar e ir al estado 119
+    BI_MENOR        desplazar e ir al estado 120
+    BI_MAYOR_IGUAL  desplazar e ir al estado 121
+    BI_MENOR_IGUAL  desplazar e ir al estado 122
+    BI_DISTINTO     desplazar e ir al estado 123
+    BI_ENTONCES     desplazar e ir al estado 235
+
+    oprel  ir al estado 124
+
+
+Estado 233
+
+   24 d_tipo: BI_TABLA BI_CORCHETE_AP expresion_t BI_SUBRANGO expresion_t BI_CORCHETE_CI BI_DE d_tipo .
+
+    $default  reduce usando la regla 24 (d_tipo)
+
+
+Estado 234
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA expresion BI_HACER instrucciones . BI_FPARA
+
+    BI_FPARA  desplazar e ir al estado 236
+
+
+Estado 235
+
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI expresion BI_ENTONCES . instrucciones lista_opciones
+
+    BI_MIENTRAS   desplazar e ir al estado 81
+    BI_PARA       desplazar e ir al estado 82
+    BI_CONTINUAR  desplazar e ir al estado 83
+    BI_SI         desplazar e ir al estado 84
+    BI_ID         desplazar e ir al estado 85
+
+    operando       ir al estado 86
+    instrucciones  ir al estado 237
+    instruccion    ir al estado 88
+    asignacion     ir al estado 89
+    alternativa    ir al estado 90
+    iteracion      ir al estado 91
+    it_cota_exp    ir al estado 92
+    it_cota_fija   ir al estado 93
+    accion_ll      ir al estado 94
+
+
+Estado 236
+
+   98 it_cota_fija: BI_PARA BI_ID BI_ASIGNACION expresion BI_HASTA expresion BI_HACER instrucciones BI_FPARA .
+
+    $default  reduce usando la regla 98 (it_cota_fija)
+
+
+Estado 237
+
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI expresion BI_ENTONCES instrucciones . lista_opciones
+
+    BI_CORCHETE_AP  desplazar e ir al estado 218
+
+    $default  reduce usando la regla 94 (lista_opciones)
+
+    lista_opciones  ir al estado 238
+
+
+Estado 238
+
+   93 lista_opciones: BI_CORCHETE_AP BI_CORCHETE_CI expresion BI_ENTONCES instrucciones lista_opciones .
+
+    $default  reduce usando la regla 93 (lista_opciones)
