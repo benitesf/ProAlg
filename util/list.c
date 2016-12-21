@@ -9,7 +9,9 @@
 #include <string.h>
 #include <assert.h>
 
-/* Crea una nueva lista */
+/**
+ * @return: una lista vacía 
+ */
 list new_list()
 {
 	list l = (list)malloc(sizeof(list));
@@ -18,7 +20,9 @@ list new_list()
 	l->size  = 0; 	
 }
 
-/* Libera la memoria ocupada por una lista y todos sus nodos */
+/**
+ * Libera la memoria ocupada por una lista
+ */
 void free_list(list l)
 {
 	if(is_empty_list(l))
@@ -41,20 +45,18 @@ void free_list(list l)
 	
 }
 
-/* Libera la memoria ocupada por un nodo*/
-void free_node_list(node* n)
-{
-	free(n);
-}
-
-/* Crea y devuelve un nuevo nodo */
+/** 
+ * @return: un nuevo nodo 
+ */
 node* new_node_list()
 {
 	node* n = (node*)malloc(sizeof(node*));	
 	return n;
 }
 
-/* Inserta un nuevo nodo en la lista */
+/**
+ * Inserta un nodo en la lista 
+ */
 void insert_node_list(list l, node* n)
 {
 	if(is_empty_list(l))
@@ -72,7 +74,9 @@ void insert_node_list(list l, node* n)
 	}	 
 }
 
-/* Devuelve 1 si la lista está vacía y 0 en caso contrario */
+/**
+ * @return: 1 si la lista está vacía y 0 en caso contrario 
+ */
 int is_empty_list(list l)
 {
 	if(l->size == 0)
@@ -81,22 +85,25 @@ int is_empty_list(list l)
 		return FALSE;
 }
 
-/* Imprime el contenido de una lista por pantalla */
+/**
+ * Imprime el contenido de una lista por pantalla 
+ */
 void to_string_list(list l)
 {
 	if(!is_empty_list(l))
 	{
-		node* curr = l->first;
+		node *curr = l->first;
 		printf("\n\n IMPRIMIENDO LISTA ... \n\n");
-		printf("Tamaño de la lista: %d\n", l->size);
-		printf("Primero de la lista: %d\n", l->first->val);
-		printf("Último de la lista: %d\n\n", l->last->val);
+		//printf("Tamaño de la lista: %d\n", l->size);
+		//printf("Primero de la lista: %d\n", l->first->val);
+		//printf("Último de la lista: %d\n\n", l->last->val);
+		printf("INDEX\n");
 		while(curr->next != NULL)
 		{
-			printf("\t%d\n",curr->val);
+			printf("%d\n",curr->index);
 			curr = curr->next;
 		}
-		printf("\t%d\n", curr->val);
+		printf("%d\n", curr->index);
 	}
 	else
 	{

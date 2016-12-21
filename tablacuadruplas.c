@@ -101,7 +101,10 @@ void backpatch(list l, int quad)
  */
 int is_empty_qt(quad_table qt)
 {
-
+	if(qt->first == NULL || qt->last == NULL || qt->size == 0)
+		return TRUE;
+	else
+		return FALSE;
 }
 
 
@@ -110,7 +113,26 @@ int is_empty_qt(quad_table qt)
  */
 void to_string_qt(quad_table qt)
 {
+	if(!is_empty_st(qt))
+	{
+		quad *curr = qt->first;
+		printf("\n\n IMPRIMIENDO TABLA DE CUADRUPLAS ... \n\n");
+		printf("Tamaño: %d\n\n", qt->size);
+		//printf("Primero: %d\n", st->first->val);
+		//printf("Último: %d\n\n", st->last->val);
+		printf("OPERATOR\tOPERAND1\tOPERAND2\tRESULT\n\n");
 
+		while(curr->next != NULL)
+		{
+			printf("%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+			curr = curr->next;
+		}
+		printf("%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+	}
+	else
+	{
+		printf("\n\n TABLA DE CUADRUPLAS VACIA ... \n\n");
+	}
 }
 
 

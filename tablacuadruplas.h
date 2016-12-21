@@ -19,6 +19,9 @@
 #include <stdlib.h>
 #include "util/list.c"
 
+#define TRUE 1
+#define FALSE 0
+
 /* Se define la estructura la cuadrupla */
 typedef struct quad{
 	int operator;
