@@ -2,8 +2,11 @@
 
 %{
   #include <stdio.h>
+  
   #include "tablasimbolos.h"
-	#include "tablacuadruplas.h"
+  #include "tablacuadruplas.h"
+  #include "exp_a_b.h"
+
   #define TRUE 1
   #define FALSE 0
   #define TIPOENTERO 1
@@ -11,25 +14,33 @@
   #define TIPOCARACTER 3
   #define TIPOREAL 4
   #define TIPOCADENA 5
-	#define SUMAENT 6
-	#define SUMAREA 7
-	#define RESTAENT 8
-	#define RESTAREA 9
-	#define MULTENT 10
-	#define MULTREA 11
-	#define DIVENT 12
-	#define DIVREA 13
-	#define INT2REA 14
-	#define ASIGNA 15
-	
-  //int yylex (void);
+  #define SUMAENT 6
+  #define SUMAREA 7
+  #define RESTAENT 8
+  #define RESTAREA 9
+  #define MULTENT 10
+  #define MULTREA 11
+  #define DIVREA 12 //Division normal, siempre reales
+  #define MODENT 13
+  #define MODREA 14
+  #define DIV 15 //Division entera, siempre enteros
+  #define INT2REA 16
+  #define ASIGNA 17
+  
+  extern int yylex();
+  extern FILE *yyin;
+
   void yyerror (char const *);
+  
+  quad_table qt;
+  symbol_table st;
+
 %}
 
 %union{
-	int paraEnteros;
-	char* paraCadenas;
-	Simbolo * paraPTS;
+  int paraEnteros;
+  char *paraCadenas;
+  exp_a_b *paraExp;
 }
 
 %token BI_IGUAL
@@ -103,7 +114,7 @@
 %token BI_LITERAL_REAL
 
 %type <paraEnteros> tipo_base
-%type <paraPTS> exp_a_b
+%type <paraExp> exp_a_b
 
 %start algoritmo
 
@@ -197,21 +208,33 @@ lista_de_cte:
 
 lista_d_var:
     lista_id BI_DOSPUNTOS BI_ID BI_PUNTO_COMA lista_d_var {}
-  | lista_id BI_DOSPUNTOS d_tipo BI_PUNTO_COMA lista_d_var { modificarTiposTS($3, &tabla); }
+  | lista_id BI_DOSPUNTOS tipo_base BI_PUNTO_COMA lista_d_var { set_type_st(st, $3); } /* Cambiamos d_tipo por tipo_base */
   | %empty
 ;
 
 lista_id:
     BI_ID BI_COMA lista_id 
-          {
-            int existe = existeSimbolo($1, &tabla);
-					  if (existe == FALSE){
-					    insertarSimbolo($1, &tabla);
-						}
+          {            
+            if (!exists_name_symbol_st(st, $1){
+              symbol *s = new_symbol_st($1);
+              insert_symbol_st(st, s);
+            }
+            else
+            {
+              printf("Error en lista_id - BI_ID BI_COMA lista_id\n");
+              printf("El nombre ya está ocupado por otro identificador.\n");              
+            }
           }
-  | BI_ID { 
-            printf("Lista de id.\n");
-	    	    insertarSimbolo($1, &tabla); 
+  | BI_ID {
+            if (!exists_name_symbol_st(st, $1){
+              symbol *s = new_symbol_st($1);
+              insert_symbol_st(st, s);
+            }
+            else
+            {
+              printf("Error en lista_id - BI_ID\n");
+              printf("El nombre ya está ocupado por otro identificador\n");
+            }           
           }
 ;
 
@@ -236,76 +259,232 @@ expresion:
 
 exp_a_b:
     exp_a_b BI_SUMA exp_a_b {
-															printf("Expresion suma\n");
-															$$ = newTemp(&tabla);
+                              printf("Expresion suma\n");
+                              char *name = "temp";
 
-															//SUMA ENTERO ENTERO
-															if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
-																gen(&tablaQuads, SUMAENT, $1->sid, $3->sid, $$->sid);
-																$$->tipo = TIPOENTERO;
-															}
+                              $$    = new_exp_a();          // Pedimos una estructura exp_a_b para manejar aritmeticos                                                            
+                              $$->s = new_symbol_st(name);  // Pedimos un simbolo temporal
+                              insert_symbol_st(st, $$->s);  // Insertamos el simbolo temporal en la tabla de simbolos
 
-															//SUMA ENTERO REAL
-															if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
-																gen(&tablaQuads, INT2REA, $1->sid, 0, $$->sid);
-																gen(&tablaQuads, SUMAREA, $$->sid, $3->sid, $$->sid);
-																$$->tipo = TIPOREAL; 
-															}
+                              //SUMA ENTERO ENTERO
+                              if($1->s->type == TIPOENTERO && $3->s->type == TIPOENTERO){
+                                quad *q = create_new_quad_qt(SUMAENT, $1->s->id, $3->s->id, $$->s->id);
+                                gen(qt, q);
+                                $$->s->type = TIPOENTERO;
+                              }
 
-															//SUMA REAL ENTERO
-															if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
-																gen(&tablaQuads, INT2REA, $3->sid, 0, $$->sid);
-																gen(&tablaQuads, SUMAREA, $$->sid, $1->sid, $$->sid);
-																$$->tipo = TIPOREAL; 
-															}
+                              //SUMA ENTERO REAL
+                              else if($1->s->type == TIPOENTERO && $3->s->type == TIPOREAL){
+                                quad *q1 = create_new_quad_qt(INT2REA, $1->s->id, NONE, $$->s->id);
+                                quad *q2 = create_new_quad_qt(SUMAREA, $$->s->id, $3->s->id, $$->s->id);
+                                gen(qt, q1);
+                                gen(qt, q2);
+                                $$->s->type = TIPOREAL; 
+                              }
 
-															//SUMA REAL REAL
-															if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
-																gen(&tablaQuads, SUMAREA, $1->sid, $3->sid, $$->sid);
-																$$->tipo = TIPOREAL; 
-															}
-																	
-														}
+                              //SUMA REAL ENTERO
+                              else if($1->s->type == TIPOREAL && $3->s->type == TIPOENTERO){
+                                quad *q1 = create_new_quad_qt(INT2REA, $3->s->id, NONE, $$->s->id);
+                                quad *q2 = create_new_quad_qt(SUMAREA, $$->s->id, $1->s->id, $$->s->id);
+                                gen(qt, q1);
+                                gen(qt, q2);
+                                $$->s->type = TIPOREAL; 
+                              }
+
+                              //SUMA REAL REAL
+                              else if($1->s->type == TIPOREAL && $3->s->type == TIPOREAL){
+                                quad *q = create_new_quad_qt(SUMAREA, $1->s->id, $3->s->id, $$->s->id);
+                                gen(qt, q);
+                                $$->s->type = TIPOREAL; 
+                              }
+
+                              //Hay algun booleano
+                              else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
+                                printf("Error: No se pueden sumar booleanos\n");
+                              }
+                                  
+                            }
   | exp_a_b BI_RESTA exp_a_b {
-																printf("Expresion resta\n");
-																$$ = newTemp(&tabla);
+                                printf("Expresion resta\n");
+                                $$ = newTemp(tabla);
 
-																//RESTA ENTERO ENTERO
-																if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
-																	gen(&tablaQuads, RESTAENT, $1->sid, $3->sid, $$->sid);
-																	$$->tipo = TIPOENTERO;
-																}
+                                //RESTA ENTERO ENTERO
+                                if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, RESTAENT, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOENTERO;
+                                }
 
-																//RESTA ENTERO REAL
-																if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
-																	gen(&tablaQuads, INT2REA, $1->sid, 0, $$->sid);
-																	gen(&tablaQuads, RESTAREA, $$->sid, $3->sid, $$->sid);
-																	$$->tipo = TIPOREAL; 
-																}
+                                //RESTA ENTERO REAL
+                                else if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, INT2REA, $1->sid, 0, $$->sid);
+                                  gen(tablaQuads, RESTAREA, $$->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
 
-																//RESTA REAL ENTERO
-																if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
-																	gen(&tablaQuads, INT2REA, $3->sid, 0, $$->sid);
-																	gen(&tablaQuads, RESTAREA, $$->sid, $1->sid, $$->sid);
-																	$$->tipo = TIPOREAL; 
-																}
+                                //RESTA REAL ENTERO
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, INT2REA, $3->sid, 0, $$->sid);
+                                  gen(tablaQuads, RESTAREA, $$->sid, $1->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
 
-																//RESTA REAL REAL
-																if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
-																	gen(&tablaQuads, RESTAREA, $1->sid, $3->sid, $$->sid);
-																	$$->tipo = TIPOREAL; 
-																}
-															}
-  | exp_a_b BI_MULT exp_a_b {}
-  | exp_a_b BI_DIVISION exp_a_b {}
-  | exp_a_b BI_MOD exp_a_b {}
-  | exp_a_b BI_DIV exp_a_b {}
-  | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI {}
-  | operando {}
-  | BI_LITERAL_ENTERO {}
-  | BI_LITERAL_REAL {} 
-  | BI_RESTA exp_a_b %prec BI_MENOS_UNARIO{}
-  | exp_a_b BI_Y exp_a_b {}
+                                //RESTA REAL REAL
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, RESTAREA, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //Hay algun booleano
+                                else if($1->tipo == TIPOBOOLEANO || $3->tipo == TIPOBOOLEANO){
+                                  printf("Error: No se pueden restar booleanos\n");
+                                }
+                              }
+  | exp_a_b BI_MULT exp_a_b {
+                                printf("Expresion Multiplicacion\n");
+                                $$ = newTemp(tabla);
+
+                                //MULTIPLICACION ENTERO ENTERO
+                                if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, MULTENT, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOENTERO;
+                                }
+
+                                //MULTIPLICACION ENTERO REAL
+                                else if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, INT2REA, $1->sid, 0, $$->sid);
+                                  gen(tablaQuads, MULTREA, $$->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //MULTIPLICACION REAL ENTERO
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, INT2REA, $3->sid, 0, $$->sid);
+                                  gen(tablaQuads, MULTREA, $$->sid, $1->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //MULTIPLICACION REAL REAL
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, MULTREA, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //Hay algun booleano
+                                else if($1->tipo == TIPOBOOLEANO || $3->tipo == TIPOBOOLEANO){
+                                  printf("Error: No se pueden multiplicar booleanos\n");
+                                }
+                              }
+  | exp_a_b BI_DIVISION exp_a_b 
+                                {
+                                printf("Expresion Division\n");
+                                $$ = newTemp(tabla);
+                                Simbolo *aux = newTemp(tabla); 
+
+                                //DIVISION ENTERO ENTERO
+                                if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, INT2REA, $1->sid, 0, $$->sid);
+                                  gen(tablaQuads, INT2REA, $3->sid, 0, aux->sid);
+                                  gen(tablaQuads, DIVREA, $$->sid, aux->sid, $$->sid);
+                                  $$->tipo = TIPOREAL;
+                                }
+
+                                //DIVISION ENTERO REAL
+                                else if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, INT2REA, $1->sid, 0, $$->sid);
+                                  gen(tablaQuads, DIVREA, $$->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //DIVISION REAL ENTERO
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, INT2REA, $3->sid, 0, $$->sid);
+                                  gen(tablaQuads, DIVREA, $$->sid, $1->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //DIVISION REAL REAL
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, DIVREA, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //Hay algun booleano
+                                else if($1->tipo == TIPOBOOLEANO || $3->tipo == TIPOBOOLEANO){
+                                  printf("Error: No se pueden dividir booleanos\n");
+                                }
+                              }
+  | exp_a_b BI_MOD exp_a_b {
+                                printf("Expresion Modulo\n");
+                                $$ = newTemp(tabla);
+
+                                //MODULO ENTERO ENTERO
+                                if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, MODENT, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOENTERO;
+                                }
+
+                                //MODULO ENTERO REAL
+                                else if($1->tipo == TIPOENTERO && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, INT2REA, $1->sid, 0, $$->sid);
+                                  gen(tablaQuads, MODREA, $$->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //MODULO REAL ENTERO
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, INT2REA, $3->sid, 0, $$->sid);
+                                  gen(tablaQuads, MODREA, $$->sid, $1->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //MODULO REAL REAL
+                                else if($1->tipo == TIPOREAL && $3->tipo == TIPOREAL){
+                                  gen(tablaQuads, MODREA, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOREAL; 
+                                }
+
+                                //Hay algun booleano
+                                else if($1->tipo == TIPOBOOLEANO || $3->tipo == TIPOBOOLEANO){
+                                  printf("Error: No se puede sacar el modulo de booleanos\n");
+                                }
+                              }
+  | exp_a_b BI_DIV exp_a_b {
+                                printf("Expresion Division Entera\n");
+                                $$ = newTemp(tabla);
+
+                                //COCIENTE ENTERO ENTERO: devuelve solo la parte entera
+                                if($1->tipo == TIPOENTERO && $3->tipo == TIPOENTERO){
+                                  gen(tablaQuads, DIV, $1->sid, $3->sid, $$->sid);
+                                  $$->tipo = TIPOENTERO;
+                                }
+
+                                //Hay algun real
+                                else if($1->tipo == TIPOREAL || $3->tipo == TIPOREAL){
+                                  printf("Error: No se pueden usar reales en una division entera\n");
+                                }
+
+                                //Hay algun booleano
+                                else if($1->tipo == TIPOBOOLEANO || $3->tipo == TIPOBOOLEANO){
+                                  printf("Error: No se puede sacar el cociente de booleanos\n");
+                                }
+                              }
+  | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI { printf("Parentesis\n"); }
+  | operando { printf("Operando\n"); }
+  | BI_LITERAL_ENTERO 
+                      {
+                        $$ = newTemp(tabla);
+                        $$->tipo = TIPOENTERO;
+                      }
+  | BI_LITERAL_REAL 
+                    {
+                      $$ = newTemp(tabla);
+                      $$->tipo = TIPOREAL;
+                    } 
+  | BI_RESTA exp_a_b %prec BI_MENOS_UNARIO { printf("Menos Unario\n"); }
+  | exp_a_b BI_Y exp_a_b 
+                      {
+
+                      }
   | exp_a_b BI_O exp_a_b {}
   | BI_NO exp_a_b {}
   | BI_LITERAL_BOOLEANO {}
@@ -413,18 +592,33 @@ l_ll:
 
 #include <ctype.h>
 
-/*int yylex (void)
+int main (int argc,char **argv)
 {
+    if (argc>1){
 
-}*/
+        FILE * file = fopen("new file ", "r" );
+        if(!file){
+            printf("El archivo no existe\n");
+            return -1;
+        }
+        yyin = file;
 
-int main (void)
-{
-	Tabla tabla = nuevaTabla();
-	TablaQuad tablaQuad = nuevaTablaQuad();
+    }else{  
 
-  //return yyparse ();
-	return 0;
+        yyin = stdin;
+
+    }
+
+    tabla = nuevaTabla();
+    tablaQuads = nuevaTablaQuad();
+    
+    do{
+        yyparse();
+    }while (!feof(yyin));
+
+    mostrarTablaSimbolos(tabla);
+    mostrarTablaQuad(tablaQuads);
+    return 0;
 }
 
 /* Called by yyparse on error.  */
@@ -432,4 +626,3 @@ void yyerror (char const *s)
 {
   fprintf (stderr, "%s\n", s);
 }
-

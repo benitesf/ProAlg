@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "util/list.c"
+#include "util/list.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -60,13 +60,13 @@ void gen(quad_table qt, quad *q);
 /**
  * @return: devuelve una cuadrupla
  */
-quad* create_new_quad(int operator, int operand1, int operand2, int result);
+quad* create_new_quad_qt(int operator, int operand1, int operand2, int result);
 
 
 /**
  * @return: devuelve el índice de la siguiente cuadrupla
  */
-int next_quad(quad_table qt);
+int next_quad_qt(quad_table qt);
 
 /**
  * @return: devuelve una lista con id de quad 

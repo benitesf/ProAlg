@@ -38,7 +38,7 @@ void gen(quad_table qt, quad *q)
 /**
  * @return: devuelve una cuadrupla
  */
-quad* create_new_quad(int operator, int operand1, int operand2, int result)
+quad* create_new_quad_qt(int operator, int operand1, int operand2, int result)
 {
 	quad *q = malloc(sizeof(quad));
 
@@ -60,17 +60,27 @@ quad* create_new_quad(int operator, int operand1, int operand2, int result)
 /**
  * @return: devuelve el índice de la siguiente cuadrupla
  */
-int next_quad(quad_table qt)
+int next_quad_qt(quad_table qt)
 {
 	return qt->size+1;
 }
 
 /**
- * @return: devuelve una lista con id de quad 
+ * @return: devuelve una lista con id de quad
  */
 list makelist(int quad)
 {
+	list l  = malloc(sizeof(list));
+	node *n = malloc(sizeof(node));
 
+	n->index = quad;
+	n->next  = NULL;
+
+	l->first = n;
+	l->last  = n;
+	l->size  = 1;
+
+	return l;		
 }
 
 
@@ -81,7 +91,16 @@ list makelist(int quad)
  */
 list merge(list l1, list l2)
 {
+	/* Reutilizamos l1, pero únicamente en el caso de que ya no volvamos a usar l1. 
+	   En el caso de que aún necesitaramos usarlo, creamos una nuvea lista y realizamos
+	   el merge de l1 y l2 */
+	//list l = malloc(sizeof(list));
 
+	l1->last->next = l2->first;
+	l1->last       = l2->last;
+	//l->first       = l1->first;
+	//l->last        = l1->last;
+	return l1;
 }
 
 
@@ -92,7 +111,7 @@ list merge(list l1, list l2)
  */
 void backpatch(list l, int quad)
 {
-
+	
 }
 
 

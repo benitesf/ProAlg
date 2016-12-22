@@ -25,38 +25,46 @@ symbol_table new_st()
 }
 
 /** 
- * Inserta un símbolo en la tabla de simbolos
- * @param st: la tabla de símbolos
- * @param name: nombre del símbolo 
+ * @return Devuelve un simbolo con nombre pasado como parámetro, y de tipo NONE
  */
-void insert_symbol_st(symbol_table st, char *name)
+symbol* new_symbol_st(char *name)
 {
 	symbol *new_symbol = malloc(sizeof(symbol));
 
 	if(new_symbol != NULL)
-	{		
-		new_symbol->id   = st->size + 1;
+	{
 		new_symbol->name = name;
 		new_symbol->type = NONE;
 
-		if(is_empty_st(st))
-		{
-			st->first = new_symbol;
-			st->last  = new_symbol;
-			st->size  = 1;
-		}
-		else
-		{
-			symbol *curr = st->last;
-			curr->next   = new_symbol;
-			st->last     = new_symbol;
-			st->size += 1;
-		}
+		return new_symbol;
 	}
 	else
 	{
 		fprintf(stderr, "failed to allocate memory.\n");
         exit(-1);
+	}
+}
+
+/** 
+ * Inserta un símbolo en la tabla de simbolos
+ * @param st: la tabla de símbolos
+ * @param name: nombre del símbolo 
+ */
+void insert_symbol_st(symbol_table st, symbol *s)
+{		
+	s->id = st->size + 1;	
+
+	if(is_empty_st(st))
+	{
+		st->first = s;
+		st->last  = s;
+		st->size  = 1;
+	}
+	else
+	{
+		st->last->next = s;		
+		st->last       = s;
+		st->size += 1;
 	}
 	
 }
@@ -64,10 +72,10 @@ void insert_symbol_st(symbol_table st, char *name)
 /**
  * @param st: tabla de símbolos
  * @param id: identificador de símbolo
- * @return: devuelve TRUE si existe símbolo con id pasado como párametro 
+ * @return: devuelve TRUE si existe símbolo con el nombre pasado como párametro 
  * y FALSE en caso contrario 
  */
-int exists_symbol_st(symbol_table st, char *name)
+int exists_name_symbol_st(symbol_table st, char *name)
 {
 	if(is_empty_st(st))
 	{
@@ -123,11 +131,11 @@ void set_type_st(symbol_table st, int type)
 * @param st: tabla de símbolos
 * @return symbol: un símbolo
 */
-symbol new_temp_st(symbol_table st)
+/*symbol new_temp_st(symbol_table st)
 {
 	char *name = "temp";
 	insert_symbol_st(st, name);
-}
+}*/
   	
 /**
 * @param st: tabla de símbolos

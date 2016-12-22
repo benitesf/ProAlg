@@ -15,11 +15,11 @@
 #define CB_TABLASIMBOLOS_H
 
 /* Define el valor que se le asigna a un símbolo cuando no tiene tipo*/
-#define NONE -1
+//#define NONE -1
 
 /* Define valores booleanos*/
-#define TRUE  1
-#define FALSE 0
+//#define TRUE  1
+//#define FALSE 0
 
 /* Se define la estructura symbol */
 typedef struct symbol{
@@ -53,19 +53,24 @@ symbol_table new_st();
 
 
 /** 
+ * @return Devuelve un simbolo con nombre pasado como parámetro, y de tipo NONE
+ */
+symbol* new_symbol_st(char *name);
+
+/** 
  * Inserta un símbolo en la tabla de simbolos
  * @param st: la tabla de símbolos
  * @param name: nombre del símbolo 
  */
-void insert_symbol_st(symbol_table st, char *name);
+void insert_symbol_st(symbol_table st, symbol *s);
 
 /**
  * @param st: tabla de símbolos
  * @param name: identificador de símbolo
- * @return: devuelve TRUE si existe símbolo con id pasado como párametro 
+ * @return: devuelve TRUE si existe símbolo con el nombre pasado como párametro 
  * y FALSE en caso contrario 
  */
-int exists_symbol_st(symbol_table st, char *name);
+int exists_name_symbol_st(symbol_table st, char *name);
 
 
 /**
@@ -91,7 +96,7 @@ void set_type_st(symbol_table st, int type);
 * @param st: tabla de símbolos
 * @return symbol: un símbolo
 */
-symbol new_temp_st(symbol_table st);
+//symbol new_temp_st(symbol_table st);
 
 
 /**
