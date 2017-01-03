@@ -8,10 +8,13 @@
    
 %{
 #include "parser.tab.h"
+#include "tablasimbolos.h"
+#include "tablacuadruplas.h"
+#include "exp_a_b.h"
 %}
 
 LETRA             [a-zA-Z]
-CIFRA    	  [0-9]
+CIFRA    	      [0-9]
 LR_EXP            (e|E)
 LR_COM_SIM        "'"
 LR_LLAVE_CI2      "/}"
@@ -119,11 +122,11 @@ LITERAL_REAL      ({LR_SUMA}|{LR_RESTA})?{CIFRA}+({LR_PUNTO}{CIFRA}+)?({LR_EXP}{
 {PR_FACCION}          {printf( "Palabra reservada faccion\n"); return(BI_FACCION);}
 {PR_ALGORITMO}        {printf( "Palabra reservada algoritmo\n"); return(BI_ALGORITMO);}
 {PR_FALGORITMO}       {printf( "Palabra reservada falgoritmo\n"); return(BI_FALGORITMO);}
-{PR_BOOLEANO}         {printf( "Palabra reservada booleano\n"); return(BI_BOOLEANO);}
-{PR_CADENA}           {printf( "Palabra reservada cadena\n"); return(BI_CADENA);}
-{PR_CARACTER}         {printf( "Palabra reservada caracter\n"); return(BI_CARACTER);}
-{PR_ENTERO}           {printf( "Palabra reservada entero\n"); return(BI_ENTERO);}
-{PR_REAL}	      {printf( "Palabra reservada real\n"); return(BI_REAL);} 
+{PR_BOOLEANO}         {printf( "Palabra reservada booleano\n"); return(BI_LITERAL_BOOLEANO);}
+{PR_CADENA}           {printf( "Palabra reservada cadena\n"); return(BI_LITERAL_CADENA);}
+{PR_CARACTER}         {printf( "Palabra reservada caracter\n"); return(BI_LITERAL_CARACTER);}
+{PR_ENTERO}           {printf( "Palabra reservada entero\n"); return(BI_LITERAL_ENTERO);}
+{PR_REAL}	          {printf( "Palabra reservada real\n"); return(BI_LITERAL_REAL);} 
 {PR_CONST}            {printf( "Palabra reservada const\n"); return(BI_CONST);}
 {PR_FCONST}           {printf( "Palabra reservada fconst\n"); return(BI_FCONST);}
 {PR_CONTINUAR}        {printf( "Palabra reservada continuar\n"); return(BI_CONTINUAR);}
@@ -136,23 +139,23 @@ LITERAL_REAL      ({LR_SUMA}|{LR_RESTA})?{CIFRA}+({LR_PUNTO}{CIFRA}+)?({LR_EXP}{
 {PR_MIENTRAS}         {printf( "Palabra reservada mientras\n"); return(BI_MIENTRAS);}
 {PR_FMIENTRAS}	      {printf( "Palabra reservada fmientras\n"); return(BI_FMIENTRAS);}
 {PR_PARA}             {printf( "Palabra reservada para\n"); return(BI_PARA);}
-{PR_FPARA}	      {printf( "Palabra reservada fpara\n"); return(BI_FPARA);}
+{PR_FPARA}	          {printf( "Palabra reservada fpara\n"); return(BI_FPARA);}
 {PR_SI}               {printf( "Palabra reservada si\n"); return(BI_SI);}
-{PR_FSI}	      {printf( "Palabra reservada fsi\n"); return(BI_FSI);}	
-{PR_TIPO}	      {printf( "Palabra reservada tipo\n"); return(BI_TIPO);}
-{PR_FTIPO}	      {printf( "Palabra reservada ftipo\n"); return(BI_FTIPO);}
-{PR_TUPLA}	      {printf( "Palabra reservada tupla\n"); return(BI_TUPLA);}
-{PR_FTUPLA}	      {printf( "Palabra reservada ftupla\n"); return(BI_FTUPLA);}
+{PR_FSI}	          {printf( "Palabra reservada fsi\n"); return(BI_FSI);}	
+{PR_TIPO}	          {printf( "Palabra reservada tipo\n"); return(BI_TIPO);}
+{PR_FTIPO}	          {printf( "Palabra reservada ftipo\n"); return(BI_FTIPO);}
+{PR_TUPLA}	          {printf( "Palabra reservada tupla\n"); return(BI_TUPLA);}
+{PR_FTUPLA}	          {printf( "Palabra reservada ftupla\n"); return(BI_FTUPLA);}
 {PR_VAR}              {printf( "Palabra reservada var\n"); return(BI_VAR);}
-{PR_FVAR}	      {printf( "Palabra reservada fvar\n"); return(BI_FVAR);}
-{PR_HACER}	      {printf( "Palabra reservada hacer\n"); return(BI_HACER);}
-{PR_HASTA}	      {printf( "Palabra reservada hasta\n"); return(BI_HASTA);}
-{PR_MOD}	      {printf( "Palabra reservada mod\n"); return(BI_MOD);}  
-{PR_NO}		      {printf( "Palabra reservada no\n"); return(BI_NO);}   
+{PR_FVAR}	          {printf( "Palabra reservada fvar\n"); return(BI_FVAR);}
+{PR_HACER}	          {printf( "Palabra reservada hacer\n"); return(BI_HACER);}
+{PR_HASTA}	          {printf( "Palabra reservada hasta\n"); return(BI_HASTA);}
+{PR_MOD}	          {printf( "Palabra reservada mod\n"); return(BI_MOD);}  
+{PR_NO}		          {printf( "Palabra reservada no\n"); return(BI_NO);}   
 {PR_O}	              {printf( "Palabra reservada O\n"); return(BI_O);}    
-{PR_REF}	      {printf( "Palabra reservada ref\n"); return(BI_REF);}  
-{PR_SAL}	      {printf( "Palabra reservada sal\n"); return(BI_SAL);}  
-{PR_TABLA}	      {printf( "Palabra reservada tabla\n"); return(BI_TABLA);}  
+{PR_REF}	          {printf( "Palabra reservada ref\n"); return(BI_REF);}  
+{PR_SAL}	          {printf( "Palabra reservada sal\n"); return(BI_SAL);}  
+{PR_TABLA}	          {printf( "Palabra reservada tabla\n"); return(BI_TABLA);}  
 {PR_Y}	              {printf( "Palabra reservada Y\n"); return(BI_Y);}  
 
 {COMENTARIO}          {printf( "Un comentario: %s\n", yytext ); return(BI_COMENTARIO);}  
@@ -161,23 +164,12 @@ LITERAL_REAL      ({LR_SUMA}|{LR_RESTA})?{CIFRA}+({LR_PUNTO}{CIFRA}+)?({LR_EXP}{
 {LITERAL_CADENA}      {printf( "Un literal cadena: %s\n", yytext ); return(BI_LITERAL_CADENA);}
 {ID}        	      {	
                         yylval.paraCadenas = malloc(strlen(yytext));
-			strncpy(yylval.paraCadenas, yytext, strlen(yytext));
-			printf( "Un identificador: %s\n", yytext );
-			return(BI_ID);
+            			strncpy(yylval.paraCadenas, yytext, strlen(yytext));
+            			printf( "Un identificador: %s\n", yytext );
+            			return(BI_ID);
 		      }
 {LITERAL_ENTERO}      {printf( "Un literal entero: %s (%d)\n", yytext, atoi( yytext )); return(BI_LITERAL_ENTERO);}
 {LITERAL_REAL}        {printf( "Un literal real: %s (%g)\n", yytext, atof( yytext )); return(BI_LITERAL_REAL);}     
 [ \t\n]+              /* eat up whitespace */   
      
 %%
-     
-int main( int argc, char **argv )
-    {
-    ++argv, --argc;  /* skip over program name */
-    if ( argc > 0 )
-            yyin = fopen( argv[0], "r" );
-    else
-            yyin = stdin;
-     
-    yylex();
-    }

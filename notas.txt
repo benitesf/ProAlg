@@ -9,3 +9,7 @@ Compilar bison:
 
 	bison -d parser.y
 
+	flex lex.l
+	bison -d parser.y
+	gcc lex.yy.c parser.tab.c tablacuadruplas.c tablasimbolos.c exp_a_b.c -o proalg -lfl
+

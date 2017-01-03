@@ -1,0 +1,10 @@
+algoritmo intercambio
+	ent a:booleano; b: booleano;
+	sal a:booleano; b: booleano;
+{Prec: a= A AND b = B}
+	var
+		aux: booleano;
+	fvar;
+	aux:= a y b;
+{Post: b=A AND a = B}
+falgoritmo

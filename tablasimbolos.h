@@ -14,6 +14,8 @@
 #ifndef CB_TABLASIMBOLOS_H
 #define CB_TABLASIMBOLOS_H
 
+#include "util.h"
+#include "util/list.h"
 /* Define el valor que se le asigna a un símbolo cuando no tiene tipo*/
 //#define NONE -1
 
@@ -27,7 +29,11 @@ typedef struct symbol{
 	char *name;				     
 	int  type;						     
 	union{
-		int val;
+		int   inte;
+		int   bool;
+		float floa;
+		char  chara;
+		char *string;		
 	}value;
 	struct symbol *next;  
 }symbol;
@@ -38,7 +44,9 @@ typedef struct symbol{
 /* Se define la estructura symbol_table */
 struct symbol_table{
 	symbol *first, *last;
+	//list pila;
 	int size;
+	int flag;
 };
 
 /* Se define el tipo symbol_table como un puntero a symbol_table*/
@@ -66,12 +74,18 @@ void insert_symbol_st(symbol_table st, symbol *s);
 
 /**
  * @param st: tabla de símbolos
- * @param name: identificador de símbolo
+ * @param name: nombre único del símbolo
  * @return: devuelve TRUE si existe símbolo con el nombre pasado como párametro 
  * y FALSE en caso contrario 
  */
 int exists_name_symbol_st(symbol_table st, char *name);
 
+/**
+ * @param st: tabla de símbolos
+ * @param name: nombre único del símbolo
+ * @return: símbolo con nombre pasado por parámetro
+ */
+symbol* get_symbol_st(symbol_table st, char *name);
 
 /**
  * @param st: tabla de símbolos
@@ -105,6 +119,17 @@ void set_type_st(symbol_table st, int type);
 */
 int is_empty_st(symbol_table st);
 
+/**
+* @param st: tabla de símbolos
+* @param flag: activa o desactiva el flag de la tabla de simbolos
+*/
+void set_flag_st(symbol_table st, int flag);
+
+/**
+* @param st: tabla de símbolos
+* @return: devuelve el flag de la tabla de simbolos
+*/
+int get_flag_st(symbol_table st);
 
 /**
  * Libera la tabla de símbolos
@@ -112,6 +137,17 @@ int is_empty_st(symbol_table st);
  */
 void free_st(symbol_table st);
 
+/**
+ * Libera la memoria ocupada por los simbolos
+ * @param s: primer simbolo
+ */
+void free_symbols_st(symbol *s);
+
+/**
+ * Deja la pila vacía
+ * @param st
+ */
+//void free_pila_st(list p);
 
 /** 
  * Imprime el contenido de una tabla de símbolos por pantalla 

@@ -14,13 +14,8 @@
 #ifndef CB_TABLACUADRUPLAS_H
 #define CB_TABLACUADRUPLAS_H
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "util/list.h"
-
-#define TRUE 1
-#define FALSE 0
+#include "util.h"
 
 /* Se define la estructura la cuadrupla */
 typedef struct quad{
@@ -60,7 +55,7 @@ void gen(quad_table qt, quad *q);
 /**
  * @return: devuelve una cuadrupla
  */
-quad* create_new_quad_qt(int operator, int operand1, int operand2, int result);
+quad* new_quad_qt(int operator, int operand1, int operand2, int result);
 
 
 /**
@@ -94,6 +89,18 @@ void backpatch(list l, int quad);
  * Comprueba si la tabla de cuadruplas esta vacía
  */
 int is_empty_qt(quad_table qt);
+
+/**
+ * Libera la tabla de cuadruplas
+ * @param qt: tabla de cuadruplas
+ */
+void free_qt(quad_table qt);
+
+/**
+ * Libera la memoria ocupada por las cuadruplas
+ * @param q: primera cuadrupla
+ */
+void free_quads_qt(quad *q);
 
 
 /**

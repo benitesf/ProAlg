@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "tablacuadruplas.h"
 
 
@@ -29,16 +32,29 @@ quad_table new_qt()
  */
 void gen(quad_table qt, quad *q)
 {
-	quad *aux = qt->last;
-	aux->next = q;	
-	qt->last = q;
+	if(is_empty_qt(qt))
+	{
+		qt->first = q;
+		qt->last  = q;
+		qt->size += 1;
+	}
+	else
+	{
+		qt->last->next = q;		
+		qt->last       = q;
+		qt->size      += 1;
+	}
+	#ifdef _DEBUG
+		printf("_______ QUAD INSERTADO _______\n");
+		to_string_qt(qt);
+	#endif
 }
 
 
 /**
  * @return: devuelve una cuadrupla
  */
-quad* create_new_quad_qt(int operator, int operand1, int operand2, int result)
+quad* new_quad_qt(int operator, int operand1, int operand2, int result)
 {
 	quad *q = malloc(sizeof(quad));
 
@@ -52,6 +68,7 @@ quad* create_new_quad_qt(int operator, int operand1, int operand2, int result)
 	q->operand1 = operand1;
 	q->operand2 = operand2;
 	q->result   = result;
+	q->next     = NULL;
 
 	return q;
 }
@@ -126,13 +143,46 @@ int is_empty_qt(quad_table qt)
 		return FALSE;
 }
 
+/**
+ * Libera la tabla de cuadruplas
+ * @param qt: tabla de cuadruplas
+ */
+void free_qt(quad_table qt)
+{
+	if(is_empty_qt(qt))
+	{
+		free(qt);
+	}
+	else
+	{
+		free_quads_qt(qt->first);
+		free(qt);
+	}
+}
+
+/**
+ * Libera la memoria ocupada por las cuadruplas
+ * @param q: primera cuadrupla
+ */
+void free_quads_qt(quad *q)
+{
+	if(q->next == NULL)
+	{
+		free(q);
+	}
+	else
+	{
+		free_quads_qt(q->next);
+		free(q);
+	}
+}
 
 /**
  * Imprime el contenido de la tabla de cuadruplas por pantalla 
  */
 void to_string_qt(quad_table qt)
 {
-	if(!is_empty_st(qt))
+	if(!is_empty_qt(qt))
 	{
 		quad *curr = qt->first;
 		printf("\n\n IMPRIMIENDO TABLA DE CUADRUPLAS ... \n\n");
@@ -143,10 +193,10 @@ void to_string_qt(quad_table qt)
 
 		while(curr->next != NULL)
 		{
-			printf("%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+			printf("\t%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
 			curr = curr->next;
 		}
-		printf("%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+		printf("\t%d\t%d\t%d\t%d\n\n",curr->operator, curr->operand1, curr->operand2, curr->result);
 	}
 	else
 	{
