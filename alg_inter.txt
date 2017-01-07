@@ -5,6 +5,6 @@ algoritmo intercambio
 	var
 		aux: booleano;
 	fvar;
-	aux:= a y b;
+	aux:= a = b;1
 {Post: b=A AND a = B}
 falgoritmo

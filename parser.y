@@ -7,7 +7,6 @@
   #include "tablasimbolos.h"
   #include "tablacuadruplas.h"
   #include "exp_a_b.h"
-  #include "util/list.h"
   
   extern int yylex();
   extern FILE *yyin;
@@ -28,8 +27,11 @@
 
 %union{
   int paraEnteros;
+  int paraBooleanos;
+  int paraOprel;
   char *paraCadenas;
   exp_a_b *paraExp;
+  int paraM;
 }
 
 %token BI_IGUAL
@@ -95,7 +97,7 @@
 %token BI_CADENA
 
 %token BI_COMENTARIO
-%token BI_LITERAL_BOOLEANO
+%token <paraBooleanos> BI_LITERAL_BOOLEANO
 %token BI_LITERAL_CARACTER
 %token BI_LITERAL_CADENA
 %token <paraCadenas> BI_ID
@@ -107,6 +109,8 @@
 %type <paraExp> operando_a_b
 %type <paraExp> operando
 %type <paraExp> expresion
+%type <paraOprel> oprel
+%type <paraM> M
 
 %start algoritmo
 
@@ -334,7 +338,9 @@ decl_sal:
 ;
 
 expresion:
-    exp_a_b 
+    exp_a_b {      
+      $$ = $1;
+    }
   | funcion_ll { printf("Funcion"); }
 ;
 
@@ -597,11 +603,26 @@ exp_a_b:
         printf("Error: No se puede sacar el cociente de booleanos\n");
       }
     }
-  | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI{}
+  | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI{
+      printf("( EXP )\n");
+      if(is_arithmetic($2))
+      {
+        $$ = $2;
+      }
+      else if(is_boolean($2))
+      {
+        $$ = $2;
+      }
+      else
+      {
+        fprintf(stderr, "ERROR. TIPO NO COMPATIBLE CON LA OPERACION (EXP)\n");
+        exit(-1);
+      }
+    }
   | operando_a_b
   | BI_LITERAL_ENTERO {
       $$    = new_exp_a();
-      $$->s = new_symbol_st(TEMP);                        
+      $$->s = new_symbol_st(TEMP);                            
       $$->s->type = TIPOENTERO;
       insert_symbol_st(st, $$->s);                      
     }
@@ -630,42 +651,115 @@ exp_a_b:
       }
       
     }
-  | exp_a_b BI_Y exp_a_b{      
-      if(is_boolean($1) && is_boolean($3))
+  | exp_a_b BI_Y M exp_a_b{      
+      if(is_boolean($1) && is_boolean($4))
       {        
-        printf("OPERACION CONJUNCION\n");
+        printf("OPERACION Y\n");
         $$ = new_exp_b();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = TIPOBOOLEANO;        
         insert_symbol_st(st, $$->s);
 
-        // HACER MAKELIST
+        backpatch($1->true, $3);
+        $$->false = merge($1->false, $4->false);
+        $$->true  = $4->true;      
       }
       else
       {
-        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION DE CONJUNCION\n");
+        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION Y\n");
         exit(-1);    
       }
     }
-  | exp_a_b BI_O exp_a_b {}
-  | BI_NO exp_a_b {}
+  | exp_a_b BI_O M exp_a_b {
+      if(is_boolean($1) && is_boolean($4))
+      {
+        printf("OPERACION O\n"); 
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+
+        backpatch($1->false, $3);
+        $$->true = merge($1->true, $4->true);
+        $$->false = $4->false;
+      }
+      else
+      {
+        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION Y\n");
+        exit(-1); 
+      }
+      
+
+    }
+  | BI_NO exp_a_b {
+      if(is_boolean($2))
+      {
+        printf("OPERACION NO\n");
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+
+        $$->true  = $2->false;
+        $$->false = $2->true;
+      }
+      else
+      {
+        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION NO\n");
+        exit(-1);  
+      }
+    }
   | BI_LITERAL_BOOLEANO {
       printf("LITERAL BOOLEANO\n");
       $$    = new_exp_b();
       $$->s = new_symbol_st(TEMP);
       $$->s->type = TIPOBOOLEANO;
+      $$->s->value.bool = $1;
       insert_symbol_st(st, $$->s);
+
+      quad *q1 = new_quad_qt(GOTO, $$->s->id, CTE_TRUE, NOGOTO);
+      quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+      gen(qt, q1);
+      gen(qt, q2);
+
+      $$->true  = makelist(q1);
+      $$->false = makelist(q2);
+
+    }  
+  | expresion oprel expresion {      
+      printf("OPREL\n");
+      if(is_boolean($1) && is_boolean($3))
+      {        
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+        
+        quad *q1 = new_quad_qt($2, $1->s->id, $3->s->id, NOGOTO);
+        quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+        gen(qt, q1);
+        gen(qt, q2);
+
+        $$->true  = makelist(q1);
+        $$->false = makelist(q2);
+      }
+      else
+      {
+        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION IGUAL\n");
+        exit(-1);
+      }
     }
-  | expresion BI_IGUAL expresion {}
-  | expresion oprel expresion {}
 ;
 
 oprel:
-    BI_MAYOR {}
-  | BI_MENOR {}
-  | BI_MAYOR_IGUAL {}
-  | BI_MENOR_IGUAL {}
-  | BI_DISTINTO {}
+    BI_MAYOR {$$ = MAYOR;}
+  | BI_MENOR {$$ = MENOR;}
+  | BI_MAYOR_IGUAL {$$ = MAYOR_IGUAL;}
+  | BI_MENOR_IGUAL {$$ = MENOR_IGUAL;}
+  | BI_DISTINTO {$$ = DISTINTO;}
+  | BI_IGUAL {$$ = IGUAL;}
 ;
 
 operando_a_b:
@@ -683,6 +777,15 @@ operando_a_b:
         else if(s->type == TIPOBOOLEANO){
           $$    = new_exp_b();
           $$->s = s;
+
+          quad *q1 = new_quad_qt(GOTO, $$->s->id, CTE_TRUE, NOGOTO);
+          quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+          gen(qt, q1);
+          gen(qt, q2);          
+
+          $$->true  = makelist(q1);
+          $$->false = makelist(q2);                   
         }        
       }
       else
@@ -722,6 +825,9 @@ operando:
   | operando BI_REF {}
 ;
 
+M:
+  %empty {$$ = next_quad_qt(qt);}
+
 instrucciones:
     instruccion BI_PUNTO_COMA instrucciones
   | instruccion BI_PUNTO_COMA
@@ -738,24 +844,40 @@ instruccion:
 asignacion:
     operando BI_ASIGNACION expresion {
       printf("ASIGNACION\n");
-      if($1->s->type == $3->s->type)
-      {        
-        quad *q = new_quad_qt(ASIGNA, $3->s->id, NONE, $1->s->id);
-        gen(qt, q);          
-      } 
-      else if($1->s->type == TIPOENTERO && $3->s->type == TIPOREAL)
+      
+      if(is_arithmetic($1) && is_arithmetic($3))
       {
-        printf("CONVERTIMOS TIPOREAL A TIPOENTERO\n");
-        quad *q = new_quad_qt(REA2INT, $3->s->id, NONE, $1->s->id);
-        gen(qt, q);
+        if($1->s->type == $3->s->type)
+        {        
+          quad *q = new_quad_qt(ASIGNA, $3->s->id, NONE, $1->s->id);
+          gen(qt, q);          
+        } 
+        else if($1->s->type == TIPOENTERO && $3->s->type == TIPOREAL)
+        {
+          printf("CONVERTIMOS TIPOREAL A TIPOENTERO\n");
+          quad *q = new_quad_qt(REA2INT, $3->s->id, NONE, $1->s->id);
+          gen(qt, q);
 
+        }
+        else if($1->s->type == TIPOREAL && $3->s->type == TIPOENTERO)
+        {
+          printf("CONVERTIMOS TIPOENTERO A TIPOREAL\n");
+          quad *q = new_quad_qt(INT2REA, $3->s->id, NONE, $1->s->id);
+          gen(qt, q);
+        }  
       }
-      else if($1->s->type == TIPOREAL && $3->s->type == TIPOENTERO)
+      else if(is_boolean($1) && is_boolean($3))
       {
-        printf("CONVERTIMOS TIPOENTERO A TIPOREAL\n");
-        quad *q = new_quad_qt(INT2REA, $3->s->id, NONE, $1->s->id);
-        gen(qt, q);
-      }
+        printf("TIPOBOOLEANO\n");
+        backpatch($3->true, next_quad_qt(qt));
+        backpatch($3->false, next_quad_qt(qt)+1);
+
+        quad *q1 = new_quad_qt(ASIGNA, CTE_TRUE, NONE, $1->s->id);
+        quad *q2 = new_quad_qt(ASIGNA, CTE_FALSE, NONE, $1->s->id);
+
+        gen(qt, q1);
+        gen(qt, q2);
+      }          
       else 
       {
         fprintf(stderr, "ERROR, LOS TIPOS SON INCOMPATIBLES\n");

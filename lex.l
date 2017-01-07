@@ -85,7 +85,8 @@ PR_TABLA	  (t|T)(a|A)(b|B)(l|L)(a|A)
 PR_Y		  (y|Y)
 
 COMENTARIO        {LR_LLAVE_AP}([^\}]|{LR_LLAVE_CI2})*{LR_LLAVE_CI}
-LITERAL_BOOLEANO  (([vV][eE][rR][dD][aA][dD][eE][rR][oO])|([fF][aA][lL][sS][oO]))
+VERDADERO         ([vV][eE][rR][dD][aA][dD][eE][rR][oO])
+FALSO             ([fF][aA][lL][sS][oO])
 LITERAL_CARACTER  \".\"
 LITERAL_CADENA    {LR_COM_SIM}([^\']|{LR_COM_BAR})*{LR_COM_SIM}
 ID       	  {LETRA}({LETRA}|{CIFRA})*
@@ -159,7 +160,8 @@ LITERAL_REAL      ({LR_SUMA}|{LR_RESTA})?{CIFRA}+({LR_PUNTO}{CIFRA}+)?({LR_EXP}{
 {PR_Y}	              {printf( "Palabra reservada Y\n"); return(BI_Y);}  
 
 {COMENTARIO}          {printf( "Un comentario: %s\n", yytext ); return(BI_COMENTARIO);}  
-{LITERAL_BOOLEANO}    {printf( "Un literal booleano: %s\n", yytext ); return(BI_LITERAL_BOOLEANO);}
+{VERDADERO}           {yylval.paraBooleanos = 1; return(BI_LITERAL_BOOLEANO);}
+{FALSO}               {yylval.paraBooleanos = 0; return(BI_LITERAL_BOOLEANO);}
 {LITERAL_CARACTER}    {printf( "Un literal caracter: %s\n", yytext ); return(BI_LITERAL_CARACTER);}
 {LITERAL_CADENA}      {printf( "Un literal cadena: %s\n", yytext ); return(BI_LITERAL_CADENA);}
 {ID}        	      {	

@@ -15,7 +15,7 @@
 #define CB_TABLASIMBOLOS_H
 
 #include "util.h"
-#include "util/list.h"
+//#include "util/list.h"
 /* Define el valor que se le asigna a un símbolo cuando no tiene tipo*/
 //#define NONE -1
 

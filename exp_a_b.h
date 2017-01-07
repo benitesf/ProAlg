@@ -9,8 +9,9 @@
 #define CB_EXP_A_B_H
 
 #include "util.h"	
-#include "util/list.h"
+//#include "util/list.h"
 #include "tablasimbolos.h"
+#include "tablacuadruplas.h"
 
 
 /* Estructura exp_a_b, para las expresiones que pueden ser aritméticas o booleanas */
