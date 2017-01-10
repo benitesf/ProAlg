@@ -1,4 +1,8 @@
 /* PRACTICA 2 */
+/*
+    @autor Benites Fernández, Edson
+    @autor Catalan Vitas, Daniel
+*/
 
 %{
   #include <stdio.h>  
@@ -10,6 +14,7 @@
   
   extern int yylex();
   extern FILE *yyin;
+  extern yylineno;
 
   void yyerror (char const *);
   
@@ -119,56 +124,116 @@
 
 
 algoritmo:
-  BI_ALGORITMO BI_ID cabecera_alg bloque_alg BI_FALGORITMO { printf("Algoritmo: %s\n", $2); }
+  BI_ALGORITMO BI_ID cabecera_alg bloque_alg BI_FALGORITMO { 
+    #ifdef _DEBUG
+    printf("ALGORITMO\n"); 
+    #endif
+  }
 ;
 
 cabecera_alg:
-  decl_globales decl_a_f decl_ent_sal BI_COMENTARIO { printf("Cabecera.\n"); }
+  decl_globales decl_a_f decl_ent_sal BI_COMENTARIO { 
+    #ifdef _DEBUG
+    printf("CABECERA\n"); 
+    #endif
+  }
+    
 ;
 
 bloque_alg:
-  bloque BI_COMENTARIO { printf("Bloque Algoritmo.\n"); };
+  bloque BI_COMENTARIO { 
+    #ifdef _DEBUG
+    printf("BLOQUE ALGORITMO\n"); 
+    #endif
+  };
+    
 ;
 
 decl_globales:
-    declaracion_tipo decl_globales { printf("Declaraciones Globales.\n"); }
-  | declaracion_cte decl_globales { printf("Declaraciones Globales.\n"); }
+    declaracion_tipo decl_globales { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE TIPO\n"); 
+      #endif
+    }
+  | declaracion_cte decl_globales { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE CTE\n"); 
+      #endif
+    }
   | %empty {}
 ;
 
 decl_a_f:
-    accion_d decl_a_f { printf("Declaracion de acciones.\n"); }
-  | funcion_d decl_a_f { printf("Declaracion de funciones.\n"); }
+    accion_d decl_a_f { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE ACCION/ES\n"); 
+      #endif
+    }
+  | funcion_d decl_a_f {
+      #ifdef _DEBUG 
+      printf("DECLARACION DE FUNCION/ES\n"); 
+      #endif
+    }
   | %empty {}
 ;
 
 bloque:
-  declaraciones instrucciones { printf("Bloque.\n"); };
+  declaraciones instrucciones { 
+    #ifdef _DEBUG
+    printf("BLOQUE DE INSTRUCCIONES\n"); 
+    #endif
+  }
 ;
 
 declaraciones:
-    declaracion_tipo declaraciones { printf("DECLARACION DE TIPOS\n");}
-  | declaracion_cte declaraciones {printf("DECLARACION DE CTE\n");}
-  | declaracion_var declaraciones {printf("DECLARACION DE VAR\n");}
+    declaracion_tipo declaraciones {
+      #ifdef _DEBUG
+      printf("DECLARACION DE TIPOS\n");
+      #endif
+    }
+  | declaracion_cte declaraciones {
+      #ifdef _DEBUG
+      printf("DECLARACION DE CTE\n");
+      #endif
+    }
+  | declaracion_var declaraciones {
+      #ifdef _DEBUG
+      printf("DECLARACION DE VAR\n");
+      #endif
+    }
   | %empty
 ;
 
 declaracion_tipo:
-  BI_TIPO lista_d_tipo BI_FTIPO { printf("Declaracion de tipos.\n"); }
+  BI_TIPO lista_d_tipo BI_FTIPO {
+    #ifdef _DEBUG
+    printf("DECLARACION DE TIPOS.\n"); 
+    #endif
+  }
 ;
 
 declaracion_cte:
-  BI_CONST lista_de_cte BI_FCONST { printf("Declaracion de constantes.\n"); }
+  BI_CONST lista_de_cte BI_FCONST {
+    #ifdef _DEBUG
+    printf("DECLARACION DE CONSTANTES\n"); 
+    #endif
+  }
 ;
 
 declaracion_var:
   BI_VAR lista_d_var BI_FVAR BI_PUNTO_COMA {     
-    printf("Declaracion de variables.\n");
+    #ifdef _DEBUG
+    printf("DECLARACION DE VARIABLES\n");
+    #endif
   }
 ;
 
 lista_d_tipo:
-    BI_ID BI_IGUAL d_tipo BI_PUNTO_COMA lista_d_tipo { printf("Lista de tipo.\n"); }
+    BI_ID BI_IGUAL d_tipo BI_PUNTO_COMA lista_d_tipo { 
+      #ifdef _DEBUG
+      printf("LISTA DE TIPO\n"); 
+      #endif
+    }
   | %empty {}
 ;
 
@@ -178,7 +243,11 @@ d_tipo:
   | BI_ID {}
   | expresion_t BI_SUBRANGO expresion_t {}
   | BI_REF d_tipo {}
-  | tipo_base { printf("Tipo : %d\n", $1); }
+  | tipo_base { 
+      #ifdef _DEBUG
+      printf("TIPO : %d\n", $1); 
+      #endif
+    }
 ;
 
 expresion_t:
@@ -193,6 +262,9 @@ lista_campos:
 
 tipo_base:
     BI_LITERAL_ENTERO{
+      #ifdef _DEBUG
+      printf("LITERAL ENTERO\n");
+      #endif
 
       $$ = TIPOENTERO; 
       if(get_flag_st(st) == NONE)
@@ -203,6 +275,9 @@ tipo_base:
 
     }
   | BI_LITERAL_BOOLEANO{
+    #ifdef _DEBUG
+    printf("LITERAL BOOLEANO\n");
+    #endif
 
     $$ = TIPOBOOLEANO; 
     if(get_flag_st(st) == NONE)
@@ -213,7 +288,10 @@ tipo_base:
 
   }
   | BI_LITERAL_CARACTER{ 
-    
+    #ifdef _DEBUG
+    printf("LITERAL CARACTER\n");
+    #endif
+
     $$ = TIPOCARACTER; 
     if(get_flag_st(st) == NONE)
     {
@@ -223,6 +301,9 @@ tipo_base:
 
   }
   | BI_LITERAL_REAL{ 
+    #ifdef _DEBUG
+    printf("LITERAL REAL\n");
+    #endif
 
     $$ = TIPOREAL;
     if(get_flag_st(st) == NONE)
@@ -233,6 +314,9 @@ tipo_base:
 
   }
   | BI_LITERAL_CADENA{ 
+    #ifdef _DEBUG
+    printf("LITERAL CADENA\n");
+    #endif
 
     $$ = TIPOCADENA;   
     if(get_flag_st(st) == NONE)
@@ -250,25 +334,12 @@ lista_de_cte:
 ;
 
 lista_d_var:
-    lista_id BI_DOSPUNTOS tipo_id BI_PUNTO_COMA lista_d_var {
-      /*
-      if(exists_name_symbol_st(st,$3))
-      {
-        symbol *s = get_symbol_st(st, $3);
-
-        if(get_flag_st(st) == NONE)
-        {
-          set_type_st(st, s->type);
-          set_flag_st(st, OFF);
-        }          
-      }
-      else
-      {
-        printf("Error en lista_d_var: no existe el tipo pasado como identificador en la tabla de simbolos\n");
-      }*/
-      
-    }
+    lista_id BI_DOSPUNTOS tipo_id BI_PUNTO_COMA lista_d_var {}
   | lista_id BI_DOSPUNTOS tipo_base BI_PUNTO_COMA lista_d_var { /* Cambiamos d_tipo por tipo_base */
+      #ifdef _DEBUG
+      printf("LISTA DE VARIABLES\n");
+      #endif
+
       if(get_flag_st(st) == NONE)
       {
         set_type_st(st, $3);
@@ -280,53 +351,81 @@ lista_d_var:
 
 tipo_id:
   BI_ID{
-    printf("_______ MODIFICAMOS TIPOS -1 POR TIPO_ID ______________\n");
-      if(exists_name_symbol_st(st,$1))
-      {
-        symbol *s = get_symbol_st(st, $1);
+    #ifdef _DEBUG
+    printf("ASIGNACION DE TIPOS POR TIPO ID\n");
+    #endif
+    
+    if(exists_name_symbol_st(st,$1))
+    {
+      symbol *s = get_symbol_st(st, $1);
 
-        if(get_flag_st(st) == NONE)
-        {
-          set_type_st(st, s->type);
-          set_flag_st(st, OFF);
-        }          
-      }
-      else
+      if(get_flag_st(st) == NONE)
       {
-        printf("Error en lista_d_var: no existe el tipo pasado como identificador en la tabla de simbolos\n");
-      }
+        set_type_st(st, s->type);
+        set_flag_st(st, OFF);
+      }          
+    }
+    else
+    {
+      printf("Error en lista_d_var: no existe el tipo pasado como identificador en la tabla de simbolos\n");
+    }
   }
 
 lista_id:
     BI_ID BI_COMA lista_id 
-          {            
-            if(!exists_name_symbol_st(st, $1)){
-              symbol *s = new_symbol_st($1);
-              insert_symbol_st(st, s);
-              set_flag_st(st, NONE);
-            }
-            else
-            {
-              printf("El nombre ya está ocupado por otro identificador.\n");              
-            }
-          }
-  | BI_ID {
-            if(!exists_name_symbol_st(st, $1)){
-              symbol *s = new_symbol_st($1);
-              insert_symbol_st(st, s);
-              set_flag_st(st, NONE);
-            }
-            else
-            {
-              printf("El nombre ya está ocupado por otro identificador\n");
-            }           
-          }
+    {
+      #ifdef _DEBUG
+      printf("LISTA DE IDENTIFICADORES\n");
+      #endif  
+
+      if(!exists_name_symbol_st(st, $1)){
+        symbol *s = new_symbol_st($1);
+        insert_symbol_st(st, s);
+        set_flag_st(st, NONE);
+      }
+      else
+      {
+        #ifdef _DEBUG
+        printf("EL IDENTIFICADOR YA EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif
+      }
+    }
+  | BI_ID 
+    {
+      #ifdef _DEBUG
+      printf("IDENTIFICADOR\n");
+      #endif
+
+      if(!exists_name_symbol_st(st, $1)){
+        symbol *s = new_symbol_st($1);
+        insert_symbol_st(st, s);
+        set_flag_st(st, NONE);
+      }
+      else
+      {
+        #ifdef _DEBUG
+        printf("EL IDENTIFICADOR YA EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif
+      }           
+    }
 ;
 
 decl_ent_sal:
-    decl_ent { printf("Declaracion de elementos de entrada\n"); }
-  | decl_ent decl_sal { printf("Declaracion de elementos de entrada/salida\n"); }
-  | decl_sal { printf("Declaracion de elementos de salida\n"); }
+    decl_ent { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE ELEMENTOS DE ENTRADA\n");
+      #endif
+    }
+  | decl_ent decl_sal { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE ELEMENTOS DE ENTRADA Y SALIDA\n");
+      #endif
+    }
+  | decl_sal { 
+      #ifdef _DEBUG
+      printf("DECLARACION DE ELEMENTOS DE SALIDA\n");
+      #endif
+    }
 ;
 
 decl_ent:
@@ -338,19 +437,24 @@ decl_sal:
 ;
 
 expresion:
-    exp_a_b {      
+    exp_a_b {
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA BOOLEANA\n");
+      #endif
+
       $$ = $1;
     }
-  | funcion_ll { printf("Funcion"); }
+  | funcion_ll {}
 ;
 
 exp_a_b:
     exp_a_b BI_SUMA exp_a_b {
-      printf("Expresion suma\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA SUMA\n");
+      #endif
 
       $$    = new_exp_a();          // Pedimos una estructura exp_a_b para manejar aritmeticos                                                            
-      $$->s = new_symbol_st(name);  // Pedimos un simbolo temporal
+      $$->s = new_symbol_st(TEMP);  // Pedimos un simbolo temporal
       insert_symbol_st(st, $$->s);  // Insertamos el simbolo temporal en la tabla de simbolos
       
       //SUMA ENTERO ENTERO
@@ -387,16 +491,17 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se pueden sumar booleanos\n");
+        yyerror("NO SE PUEDEN SUMAR BOOLEANOS");
       }
           
     }
   | exp_a_b BI_RESTA exp_a_b {
-      printf("Expresion resta\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA RESTA\n");
+      #endif
 
       $$    = new_exp_a();          // Pedimos una estructura exp_a_b para manejar aritmeticos                                                            
-      $$->s = new_symbol_st(name);  // Pedimos un simbolo temporal
+      $$->s = new_symbol_st(TEMP);  // Pedimos un simbolo temporal
       insert_symbol_st(st, $$->s);  // Insertamos el simbolo temporal en la tabla de simbolos
 
       //RESTA ENTERO ENTERO
@@ -433,15 +538,16 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se pueden restar booleanos\n");
+        yyerror("NO SE PUEDEN RESTAR BOOLEANOS");
       }
     }
   | exp_a_b BI_MULT exp_a_b {
-      printf("Expresion Multiplicacion\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA MULTIPLICACION\n");
+      #endif
 
       $$    = new_exp_a();
-      $$->s = new_symbol_st(name);
+      $$->s = new_symbol_st(TEMP);
       insert_symbol_st(st, $$->s);
 
       //MULTIPLICACION ENTERO ENTERO
@@ -478,18 +584,19 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se pueden multiplicar booleanos\n");
+        yyerror("NO SE PUEDEN MULTIPLICAR BOOLEANOS");
       }
     }
   | exp_a_b BI_DIVISION exp_a_b {
-      printf("Expresion Division\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA DIVISION\n");
+      #endif
 
       $$    = new_exp_a();
-      $$->s = new_symbol_st(name);
+      $$->s = new_symbol_st(TEMP);
       insert_symbol_st(st, $$->s);
 
-      symbol *aux = new_symbol_st(name);
+      symbol *aux = new_symbol_st(TEMP);
       insert_symbol_st(st, aux); 
 
       //DIVISION ENTERO ENTERO
@@ -530,15 +637,16 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se pueden dividir booleanos\n");
+        yyerror("NO SE PUEDEN DIVIDIR BOOLEANOS");
       }
     }
   | exp_a_b BI_MOD exp_a_b {
-      printf("Expresion Modulo\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA MODULO\n");
+      #endif
 
       $$    = new_exp_a();
-      $$->s = new_symbol_st(name);
+      $$->s = new_symbol_st(TEMP);
       insert_symbol_st(st, $$->s);
 
       //MODULO ENTERO ENTERO
@@ -575,15 +683,16 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se puede sacar el modulo de booleanos\n");
+        yyerror("NO SE PUEDE SACAR LE MODULO DE BOOLEANOS");
       }
     }
   | exp_a_b BI_DIV exp_a_b {
-      printf("Expresion Division Entera\n");
-      char *name = "temp";
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA DIVISION ENTERA\n");
+      #endif
 
       $$    = new_exp_a();
-      $$->s = new_symbol_st(name);
+      $$->s = new_symbol_st(TEMP);
       insert_symbol_st(st, $$->s);
 
       //COCIENTE ENTERO ENTERO: devuelve solo la parte entera
@@ -600,11 +709,14 @@ exp_a_b:
 
       //Hay algun booleano
       else if($1->s->type == TIPOBOOLEANO || $3->s->type == TIPOBOOLEANO){
-        printf("Error: No se puede sacar el cociente de booleanos\n");
+        yyerror("NO SE PUEDE SACAR EL COCIENTE DE BOOLEANOS");
       }
     }
   | BI_PARENTESIS_AP exp_a_b BI_PARENTESIS_CI{
-      printf("( EXP )\n");
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA BOOLEANA PARENTESIS\n");
+      #endif
+
       if(is_arithmetic($2))
       {
         $$ = $2;
@@ -615,18 +727,25 @@ exp_a_b:
       }
       else
       {
-        fprintf(stderr, "ERROR. TIPO NO COMPATIBLE CON LA OPERACION (EXP)\n");
-        exit(-1);
+        yyerror("TIPO NO COMPATIBLE CON LA OPERACION (EXP)");        
       }
     }
   | operando_a_b
   | BI_LITERAL_ENTERO {
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA LITERAL ENTERO\n");
+      #endif
+
       $$    = new_exp_a();
       $$->s = new_symbol_st(TEMP);                            
       $$->s->type = TIPOENTERO;
       insert_symbol_st(st, $$->s);                      
     }
   | BI_LITERAL_REAL {
+      #ifdef _DEBUG
+      printf("EXPRESION ARITMETICA LITERAL REAL\n");
+      #endif
+
       $$    = new_exp_a();
       $$->s = new_symbol_st(TEMP);                        
       $$->s->type = TIPOREAL;
@@ -635,7 +754,10 @@ exp_a_b:
   | BI_RESTA exp_a_b %prec BI_MENOS_UNARIO {      
       if(is_arithmetic($2))
       {
-        printf("Menos unario\n");
+        #ifdef _DEBUG
+        printf("EXPRESION ARITMETICA MENOS UNARIO\n");
+        #endif
+
         $$    = new_exp_a();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = $2->s->type;
@@ -646,15 +768,17 @@ exp_a_b:
       }
       else if(is_boolean($2))
       {
-        fprintf(stderr, "MENOS UNARIO NO COMPATIBLE CON EL TIPO DEL OPERANDO\n");
-        exit(-1);        
+        yyerror("MENOS UNARIO NO COMPATIBLE CON EL TIPO DEL OPERANDO");        
       }
       
     }
   | exp_a_b BI_Y M exp_a_b{      
       if(is_boolean($1) && is_boolean($4))
       {        
-        printf("OPERACION Y\n");
+        #ifdef _DEBUG
+        printf("EXPRESION BOOLEANA Y\n");
+        #endif
+
         $$ = new_exp_b();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = TIPOBOOLEANO;        
@@ -666,14 +790,16 @@ exp_a_b:
       }
       else
       {
-        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION Y\n");
-        exit(-1);    
+        yyerror("TIPOS NOS COMPATIBLES CON LA OPERACION Y");
       }
     }
-  | exp_a_b BI_O M exp_a_b {
+  | exp_a_b BI_O M exp_a_b {      
       if(is_boolean($1) && is_boolean($4))
       {
-        printf("OPERACION O\n"); 
+        #ifdef _DEBUG
+        printf("EXPRESION BOOLEANA O\n");
+        #endif
+
         $$ = new_exp_b();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = TIPOBOOLEANO;
@@ -685,8 +811,7 @@ exp_a_b:
       }
       else
       {
-        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION Y\n");
-        exit(-1); 
+        yyerror("TIPOS NOS COMPATIBLES CON LA OPERACION O");
       }
       
 
@@ -694,7 +819,10 @@ exp_a_b:
   | BI_NO exp_a_b {
       if(is_boolean($2))
       {
-        printf("OPERACION NO\n");
+        #ifdef _DEBUG
+        printf("EXPRESION BOOLEANA NEGACION\n");
+        #endif
+
         $$ = new_exp_b();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = TIPOBOOLEANO;
@@ -705,12 +833,14 @@ exp_a_b:
       }
       else
       {
-        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION NO\n");
-        exit(-1);  
+        yyerror("TIPOS NOS COMPATIBLES CON LA OPERACION NEGACION");
       }
     }
   | BI_LITERAL_BOOLEANO {
-      printf("LITERAL BOOLEANO\n");
+      #ifdef _DEBUG
+      printf("EXPRESION BOOLEANA LITERAL BOOLEANO\n");
+      #endif
+
       $$    = new_exp_b();
       $$->s = new_symbol_st(TEMP);
       $$->s->type = TIPOBOOLEANO;
@@ -727,10 +857,15 @@ exp_a_b:
       $$->false = makelist(q2);
 
     }  
-  | expresion oprel expresion {      
-      printf("OPREL\n");
+  | expresion oprel expresion {
+    if($2 == IGUAL || $2 == DISTINTO)
+    {
       if(is_boolean($1) && is_boolean($3))
       {        
+        #ifdef _DEBUG
+        printf("EXPRESION BOOLEANA OPREL\n");
+        #endif
+
         $$ = new_exp_b();
         $$->s = new_symbol_st(TEMP);
         $$->s->type = TIPOBOOLEANO;
@@ -745,12 +880,86 @@ exp_a_b:
         $$->true  = makelist(q1);
         $$->false = makelist(q2);
       }
+      else if(is_arithmetic($1) && is_arithmetic($3))
+      {
+        #ifdef _DEBUG
+        printf("EXPRESION ARITMETICA OPREL\n");
+        #endif 
+        
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+        
+        quad *q1 = new_quad_qt($2, $1->s->id, $3->s->id, NOGOTO);
+        quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+        gen(qt, q1);
+        gen(qt, q2);
+
+        $$->true  = makelist(q1);
+        $$->false = makelist(q2);        
+      }
       else
       {
-        fprintf(stderr, "ERROR. TIPOS NOS COMPATIBLES CON LA OPERACION IGUAL\n");
-        exit(-1);
+        yyerror("TIPOS NOS COMPATIBLES CON OPREL");
       }
     }
+    else
+    {
+      if(is_arithmetic($1) && is_arithmetic($3))
+      {
+        #ifdef _DEBUG
+        printf("EXPRESION ARITMETICA OPREL\n");
+        #endif 
+        
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+        
+        quad *q1 = new_quad_qt($2, $1->s->id, $3->s->id, NOGOTO);
+        quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+        gen(qt, q1);
+        gen(qt, q2);
+
+        $$->true  = makelist(q1);
+        $$->false = makelist(q2);        
+      }
+      else
+      {
+        yyerror("TIPOS NOS COMPATIBLES CON OPREL");
+      }
+    }     
+      
+    }
+  | operando_a_b oprel operando_a_b{
+      if(is_arithmetic($1) && is_arithmetic($3))
+      {
+        #ifdef _DEBUG
+        printf("OPERANDO ARITMETICO OPREL OPERANDO ARITMETICO\n");
+        #endif 
+        
+        $$ = new_exp_b();
+        $$->s = new_symbol_st(TEMP);
+        $$->s->type = TIPOBOOLEANO;
+        insert_symbol_st(st, $$->s);
+        
+        quad *q1 = new_quad_qt($2, $1->s->id, $3->s->id, NOGOTO);
+        quad *q2 = new_quad_qt(GOTO, $$->s->id, CTE_FALSE, NOGOTO);
+
+        gen(qt, q1);
+        gen(qt, q2);
+
+        $$->true  = makelist(q1);
+        $$->false = makelist(q2);        
+      }
+      else
+      {
+        yyerror("TIPOS NOS COMPATIBLES CON LA OPERACION IGUAL BOOLEANA");
+      }
+  }
 ;
 
 oprel:
@@ -764,9 +973,16 @@ oprel:
 
 operando_a_b:
     BI_ID{
+      #ifdef _DEBUG
       printf("OPERANDO_A_B\n");
+      #endif
+
       if(exists_name_symbol_st(st, $1))
-      {                    
+      { 
+        #ifdef _DEBUG
+        printf("EL ID EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif                   
+
         symbol *s = get_symbol_st(st, $1); 
 
         if(s->type == TIPOREAL || s->type == TIPOENTERO)
@@ -790,7 +1006,10 @@ operando_a_b:
       }
       else
       {
-        printf("El operando no existe en la tabla de simbolos\n");
+        #ifdef _DEBUG
+        printf("EL ID NO EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif
+        yyerror("ID NO EXISTE EN LA TABLA DE SIMBOLOS");
       }      
     }
   | operando BI_PUNTO operando  {}
@@ -800,9 +1019,16 @@ operando_a_b:
 
 operando:
     BI_ID {      
+      #ifdef _DEBUG
       printf("OPERANDO\n");
+      #endif
+
       if(exists_name_symbol_st(st, $1))
-      {                
+      {    
+        #ifdef _DEBUG
+        printf("EL ID EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif
+
         symbol *s = get_symbol_st(st, $1);
         
         if(s->type == TIPOREAL || s->type == TIPOENTERO)
@@ -817,7 +1043,10 @@ operando:
       }
       else
       {
-        printf("El operando no existe en la tabla de simbolos\n");
+        #ifdef _DEBUG
+        printf("EL ID NO EXISTE EN LA TABLA DE SIMBOLOS\n");
+        #endif
+        yyerror("ID NO EXISTE EN LA TABLA DE SIMBOLOS");
       }
     }
   | operando BI_PUNTO operando  {}
@@ -836,17 +1065,22 @@ instrucciones:
 instruccion:
     BI_CONTINUAR {}
   | asignacion 
-  | alternativa {}
+  | alternativa {
+
+  }
   | iteracion {}
   | accion_ll {}
 ;
 
 asignacion:
     operando BI_ASIGNACION expresion {
-      printf("ASIGNACION\n");
       
       if(is_arithmetic($1) && is_arithmetic($3))
       {
+        #ifdef _DEBUG
+        printf("ASIGNACION ARITMETICA\n");
+        #endif
+
         if($1->s->type == $3->s->type)
         {        
           quad *q = new_quad_qt(ASIGNA, $3->s->id, NONE, $1->s->id);
@@ -868,7 +1102,10 @@ asignacion:
       }
       else if(is_boolean($1) && is_boolean($3))
       {
-        printf("TIPOBOOLEANO\n");
+        #ifdef _DEBUG
+        printf("ASIGNACION BOOLEANA\n");
+        #endif
+
         backpatch($3->true, next_quad_qt(qt));
         backpatch($3->false, next_quad_qt(qt)+1);
 
@@ -879,9 +1116,8 @@ asignacion:
         gen(qt, q2);
       }          
       else 
-      {
-        fprintf(stderr, "ERROR, LOS TIPOS SON INCOMPATIBLES\n");
-        exit(-1);
+      {  
+        yyerror("ERROR. LOS TIPOS SON INCOMPATIBLES PARA LA ASIGNACION");            
       }      
     }
 ;
@@ -956,52 +1192,42 @@ l_ll:
 
 int main (int argc,char **argv)
 {
-    if (argc>1){
+    if(argc>1)
+    {
+      FILE * file = fopen(argv[1], "r" );
+      if(!file)
+      {
+        printf("El archivo no existe\n");
+        return -1;
+      }
+      yyin = file;
 
-        FILE * file = fopen(argv[1], "r" );
-        if(!file){
-            printf("El archivo no existe\n");
-            return -1;
-        }
-        yyin = file;
-
-    }else{  
-
-        yyin = stdin;
-
+    }
+    else
+    {  
+      yyin = stdin;
     }
 
     st = new_st();
     qt = new_qt();
     
+    int ret;
+
     do{
-        yyparse();
+       ret = yyparse();
     }while (!feof(yyin));
 
-    to_string_st(st);
-    to_string_qt(qt);
+    if(ret == 0)
+    {
+      printf("\nCOMPILACION EXITOSA\n");
+      to_string_st(st);
+      to_string_qt(qt);
+    }
+    else
+      printf("\nOCURRIÓ UN ERROR EN LA COMPILACION\n");   
 
     free_st(st);
     free_qt(qt);
-
-    /*st = new_st();
-    qt = new_qt();  
-
-    switch(yyparse())
-    {
-      case 0:
-        printf("\nCompilación exitosa\n");
-      break;
-      case 1:
-        printf("\nError en la compilación\n");
-      break;
-    }
-
-    to_string_st(st);
-    to_string_qt(qt);
-    
-    free_st(st);
-    free_qt(qt);*/
 
     return 0;
 }
@@ -1009,6 +1235,6 @@ int main (int argc,char **argv)
 /* Called by yyparse on error.  */
 void yyerror (char const *s)
 {
-  fprintf (stderr, "Error en el parser: %s\n", s);
-  //printf("error de parseo(linea %d): %s\n", line_number, s);
+  fprintf (stderr, "Error en el parser (linea %d): %s\n", yylineno, s);
+  exit(-1);
 }

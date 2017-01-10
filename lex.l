@@ -1,17 +1,24 @@
 /* scanner para la practica 1 */
+/*
+    @autor Benites Fernández, Edson
+    @autor Catalan Vitas, Daniel
+*/
   
 /* DECLARACIONES 
  * En la parte de las declaraciones se declaran:
  * 	- Constantes Manifiestas  %{ %}
  *	- Las definiciones y expresiones regulares	
  */
-   
+
+
 %{
 #include "parser.tab.h"
 #include "tablasimbolos.h"
 #include "tablacuadruplas.h"
 #include "exp_a_b.h"
 %}
+
+%option yylineno
 
 LETRA             [a-zA-Z]
 CIFRA    	      [0-9]
@@ -166,12 +173,12 @@ LITERAL_REAL      ({LR_SUMA}|{LR_RESTA})?{CIFRA}+({LR_PUNTO}{CIFRA}+)?({LR_EXP}{
 {LITERAL_CADENA}      {printf( "Un literal cadena: %s\n", yytext ); return(BI_LITERAL_CADENA);}
 {ID}        	      {	
                         yylval.paraCadenas = malloc(strlen(yytext));
-            			strncpy(yylval.paraCadenas, yytext, strlen(yytext));
-            			printf( "Un identificador: %s\n", yytext );
-            			return(BI_ID);
+            			strncpy(yylval.paraCadenas, yytext, strlen(yytext));            			
+            			printf("Un identificador: %s\n", yytext);
+                        return(BI_ID);
 		      }
 {LITERAL_ENTERO}      {printf( "Un literal entero: %s (%d)\n", yytext, atoi( yytext )); return(BI_LITERAL_ENTERO);}
 {LITERAL_REAL}        {printf( "Un literal real: %s (%g)\n", yytext, atof( yytext )); return(BI_LITERAL_REAL);}     
-[ \t\n]+              /* eat up whitespace */   
-     
+\t {}                 /* eat up whitespace */   
+\n {}        
 %%

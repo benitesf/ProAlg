@@ -19,7 +19,6 @@ symbol_table new_st()
 	
 	st->first = NULL;
 	st->last  = NULL;
-	//st->pila  = new_list();
 	st->size  = 0;
 	st->flag  = OFF;
 	
@@ -58,12 +57,7 @@ symbol* new_symbol_st(char *name)
  * @param name: nombre del símbolo 
  */
 void insert_symbol_st(symbol_table st, symbol *s)
-{		
-	/*#ifdef _DEBUG
-		printf("_______ SE VA A INSERTAR UN NUEVO SIMBOLO _______\n");
-		to_string_st(st);		
-	#endif*/
-
+{	
 	s->id = st->size + 1;	
 
 	if(is_empty_st(st))
@@ -278,58 +272,63 @@ void to_string_st(symbol_table st)
 	if(!is_empty_st(st))
 	{
 		symbol *curr = st->first;
-		printf("\n\n IMPRIMIENDO TABLA DE SIMBOLOS ... \n\n");
-		printf("Tamaño: %d\n\n", st->size);
-		printf("flag: %d\n\n", st->flag);
+		printf("\n\n|_____________ IMPRIMIENDO TABLA DE SIMBOLOS _______________|\n\n");
+		printf("|\tTamaño: %d\n\n", st->size);
+		printf("|\tflag: %d\n\n", st->flag);
 		//printf("Primero: %d\n", st->first->val);
 		//printf("Último: %d\n\n", st->last->val);
-		printf("ID\tNAME\tTYPE\tVALUE\n\n");
+		printf("|\tID\tNAME\tTYPE\tVALUE\n\n");
 
 		while(curr->next != NULL)
 		{
 			if(curr->type == TIPOENTERO)
 			{
-				printf("%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.inte);
+				printf("|\t%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.inte);
 			}
 			else if(curr->type == TIPOREAL)
 			{
-				printf("%d\t%s\t%d\t%f\n",curr->id, curr->name, curr->type, curr->value.floa);	
+				printf("|\t%d\t%s\t%d\t%f\n",curr->id, curr->name, curr->type, curr->value.floa);	
 			}
 			else if(curr->type == TIPOCADENA)
 			{
-				printf("%d\t%s\t%d\t%s\n",curr->id, curr->name, curr->type, curr->value.string);
+				printf("|\t%d\t%s\t%d\t%s\n",curr->id, curr->name, curr->type, curr->value.string);
 			}
 			else if(curr->type == TIPOCARACTER)
 			{
-				printf("%d\t%s\t%d\t%c\n",curr->id, curr->name, curr->type, curr->value.chara);
+				printf("|\t%d\t%s\t%d\t%c\n",curr->id, curr->name, curr->type, curr->value.chara);
 			}
 			else if(curr->type == TIPOBOOLEANO)
 			{
-				printf("%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.bool);
+				printf("|\t%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.bool);
 			}
 			
 			curr = curr->next;
 		}
 		if(curr->type == TIPOENTERO)
 		{
-			printf("%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.inte);
+			printf("|\t%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.inte);
 		}
 		else if(curr->type == TIPOREAL)
 		{
-			printf("%d\t%s\t%d\t%f\n",curr->id, curr->name, curr->type, curr->value.floa);	
+			printf("|\t%d\t%s\t%d\t%f\n",curr->id, curr->name, curr->type, curr->value.floa);	
 		}
 		else if(curr->type == TIPOCADENA)
 		{
-			printf("%d\t%s\t%d\t%s\n",curr->id, curr->name, curr->type, curr->value.string);
+			printf("|\t%d\t%s\t%d\t%s\n",curr->id, curr->name, curr->type, curr->value.string);
 		}
 		else if(curr->type == TIPOCARACTER)
 		{
-			printf("%d\t%s\t%d\t%c\n",curr->id, curr->name, curr->type, curr->value.chara);
+			printf("|\t%d\t%s\t%d\t%c\n",curr->id, curr->name, curr->type, curr->value.chara);
 		}
 		else if(curr->type == TIPOBOOLEANO)
 		{
-			printf("%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.bool);
+			printf("|\t%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, curr->value.bool);
 		}
+		else
+		{
+			printf("|\t%d\t%s\t%d\t%d\n",curr->id, curr->name, curr->type, NONE);	
+		}
+		printf("|___________________________________________________________|\n");
 	}
 	else
 	{

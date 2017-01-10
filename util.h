@@ -2,7 +2,8 @@
 	@descripcion En esta cabecera se definen macros para definir la estructura
 	exp_a_b, TRUE, FALSE.		
 	
-	@autor Benites Fernández, Edson	        
+	@autor Benites Fernández, Edson
+	@autor Catalan Vitas, Daniel	        
 */
 
 #ifndef CB_UTIL_MACROS_H

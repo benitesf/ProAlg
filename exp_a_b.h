@@ -2,14 +2,14 @@
 	@descripcion En esta cabecera se define la macro para definir la estructura
 	exp_a_b		
 	
-	@autor Benites Fernández, Edson	        
+	@autor Benites Fernández, Edson
+	@autor Catalan Vitas, Daniel	        
 */
 
 #ifndef CB_EXP_A_B_H
 #define CB_EXP_A_B_H
 
 #include "util.h"	
-//#include "util/list.h"
 #include "tablasimbolos.h"
 #include "tablacuadruplas.h"
 

@@ -160,7 +160,9 @@ void backpatch(list l, int q)
 				curr = curr->next;
 			}
 			curr->q->result = q;
+
 			#ifdef _DEBUG
+				printf("____ BACKPATCH REALIZADO ______\n");
 				to_string_list(l);
 			#endif
 		}
@@ -231,18 +233,17 @@ void to_string_qt(quad_table qt)
 	if(!is_empty_qt(qt))
 	{
 		quad *curr = qt->first;
-		printf("\n\n IMPRIMIENDO TABLA DE CUADRUPLAS ... \n\n");
-		printf("Tamaño: %d\n\n", qt->size);
-		//printf("Primero: %d\n", st->first->val);
-		//printf("Último: %d\n\n", st->last->val);
-		printf("OPERATOR\tOPERAND1\tOPERAND2\tRESULT\n\n");
+		printf("\n\n|_____________ IMPRIMIENDO TABLA DE CUADRUPLAS _______________|\n\n");
+		printf("|\tTamaño: %d\n\n", qt->size);
+		printf("|\tOPERATOR\tOPERAND1\tOPERAND2\tRESULT\n\n");
 
 		while(curr->next != NULL)
 		{
-			printf("\t%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+			printf("|\t%d\t%d\t%d\t%d\n",curr->operator, curr->operand1, curr->operand2, curr->result);
 			curr = curr->next;
 		}
-		printf("\t%d\t%d\t%d\t%d\n\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+		printf("|\t%d\t%d\t%d\t%d\n\n",curr->operator, curr->operand1, curr->operand2, curr->result);
+		printf("|_____________________________________________________________|\n");
 	}
 	else
 	{
@@ -257,17 +258,7 @@ void to_string_qt(quad_table qt)
  * Libera la memoria ocupada por una lista
  */
 void free_list(list l)
-{
-	/*if(is_empty_list(l))
-	{
-		printf("Lista vacía, la borramos\n");
-		free(l);	
-	}
-	else
-	{
-		free_quads_qt(l->first);
-		free(l);							
-	}*/
+{	
 	printf("NO IMPLEMENTADO FREE_LIST\n");
 }
 
@@ -300,18 +291,17 @@ void to_string_list(list l)
 		if(!is_empty_list(l))
 		{
 			node *curr = l->first;
-			printf("\n\n IMPRIMIENDO LISTA ... \n\n");
-			printf("Tamaño: %d\n\n", l->size);
-			//printf("Primero: %d\n", st->first->val);
-			//printf("Último: %d\n\n", st->last->val);
-			printf("OPERATOR\tOPERAND1\tOPERAND2\tRESULT\n\n");
+			printf("\n\n|____________________ IMPRIMIENDO LISTA _______________________|\n\n");
+			printf("|\tTamaño: %d\n\n", l->size);			
+			printf("|\tOPERATOR\tOPERAND1\tOPERAND2\tRESULT\n\n");
 
 			while(curr->next != NULL)
 			{
-				printf("\t%d\t%d\t%d\t%d\n",curr->q->operator, curr->q->operand1, curr->q->operand2, curr->q->result);
+				printf("|\t%d\t%d\t%d\t%d\n",curr->q->operator, curr->q->operand1, curr->q->operand2, curr->q->result);
 				curr = curr->next;
 			}
-			printf("\t%d\t%d\t%d\t%d\n\n",curr->q->operator, curr->q->operand1, curr->q->operand2, curr->q->result);			
+			printf("|\t%d\t%d\t%d\t%d\n\n",curr->q->operator, curr->q->operand1, curr->q->operand2, curr->q->result);			
+			printf("|______________________________________________________________|\n");
 		}
 		else
 		{

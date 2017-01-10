@@ -8,13 +8,13 @@
 		-result:   es el resultado de la operación
 		-next:     es un puntero a la siguiente cuadrupla
 	
-	@autor Benites Fernández, Edson	        
+	@autor Benites Fernández, Edson
+	@autor Catalan Vitas, Daniel	        
 */
 
 #ifndef CB_TABLACUADRUPLAS_H
 #define CB_TABLACUADRUPLAS_H
 
-//#include "util/list.h"
 #include "util.h"
 
 /* Se define la estructura la cuadrupla */

@@ -9,19 +9,13 @@
 		-next:  es un puntero a la siguiente simbolo.
 	
 	@autor Benites Fernández, Edson	        
+	@autor Catalan Vitas, Daniel
 */
 
 #ifndef CB_TABLASIMBOLOS_H
 #define CB_TABLASIMBOLOS_H
 
 #include "util.h"
-//#include "util/list.h"
-/* Define el valor que se le asigna a un símbolo cuando no tiene tipo*/
-//#define NONE -1
-
-/* Define valores booleanos*/
-//#define TRUE  1
-//#define FALSE 0
 
 /* Se define la estructura symbol */
 typedef struct symbol{
