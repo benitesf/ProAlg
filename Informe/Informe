@@ -10,7 +10,10 @@ Autores:  Benites Fernández, Edson
 
 Hemos conseguido que nuestro compilador haga lo siguiente:
 	
-	Almacenar variables de entrada y salida, con sus respectivos tipos entero, booleano, caracter, real y cadena. Es posible declarar una variable o más con un mismo tipo, esto es, var1, var2, ... , varn : tipo. También es posible indicar una variable como un tipo. Es decir, var2, var3: var1; , si var1 existe en la tabla de símbolos, se toma su tipo y se les asigna a var2 y var3, en caso de que no exista se produce un error.
+	Almacenar variables de entrada y salida, con sus respectivos tipos entero, booleano, caracter, real y cadena. 
+	Es posible declarar una variable o más con un mismo tipo, esto es, var1, var2, ... , varn : tipo. También es 
+	posible indicar una variable como un tipo. Es decir, var2, var3: var1; , si var1 existe en la tabla de símbolos, 
+	se toma su tipo y se les asigna a var2 y var3, en caso de que no exista se produce un error.
 
 	En el caso de declarar una variable como entrada y salida, el parser lo insertará una única vez. 
 
@@ -18,33 +21,49 @@ Hemos conseguido que nuestro compilador haga lo siguiente:
 
 	Estos casos se pueden comprobar ejecutando el ejemplo intercambio.txt que se encuentra en la carpeta Test.
 
-	Operaciones con expresiones aritméticas, booleanas y literales. Las operaciones son sumar, restar, multiplicar, dividir, división entera, resto, y, o, negación, y operaciones relacionales.
+	Operaciones con expresiones aritméticas, booleanas y literales. Las operaciones son sumar, restar, multiplicar, 
+	dividir, división entera, resto, y, o, negación, y operaciones relacionales.
 
 	También se ha realizado la operación de asignación (con su respectiva comprobación y conversión (si procede) de tipos)
 
-	En el fichero prueba2.txt de la carpeta Test tenemos un algoritmo de test con varias operaciones aritméticas entremezcladas, con cambios de tipo y literales incluidos, para comprobar las cuadruplas creadas.
+	En el fichero prueba2.txt de la carpeta Test tenemos un algoritmo de test con varias operaciones aritméticas 
+	entremezcladas, con cambios de tipo y literales incluidos, para comprobar las cuadruplas creadas.
 
-	Una vez realizado las expresiones booleanas y las operaciones relacionales, se puede realizar, las instrucciones secuencial, alternativa y composición iterativa. Pero por falta de tiempo no se han implementado. 
+	Una vez realizado las expresiones booleanas y las operaciones relacionales, se puede realizar, las instrucciones 
+	secuencial, alternativa y composición iterativa. Pero por falta de tiempo no se han implementado. 
 
-	Si se ejecuta el ejemplo Test/orden3.txt, aunque no funciona los saltos para las instrucciones si, se puede apreciar que las operaciones booleanas y relacionales funcionan.
+	Si se ejecuta el ejemplo Test/orden3.txt, aunque no funciona los saltos para las instrucciones si, se puede apreciar 
+	que las operaciones booleanas y relacionales funcionan.
 
 
 Decisiones de implementación que hemos tomado:
 
-	Para acabar con el conflicto del operador de las operaciones aritméticas y booleanas, decidimos optar por la opción de juntar ambos tipos de operaciones como en C. Esto ha repercutido	en tener que comprobar más tipos a la hora de realizar operaciones (como por ejemplo no permitir tipos booleanos en operaciones aritmeticas + - etc..., o no permitir operadores aritmeticos en operaciones booleanas Y, O, etc...)
+	Para acabar con el conflicto del operador de las operaciones aritméticas y booleanas, decidimos optar por la 
+	opción de juntar ambos tipos de operaciones como en C. Esto ha repercutido	en tener que comprobar más tipos a la hora 
+	de realizar operaciones (como por ejemplo no permitir tipos booleanos en operaciones aritmeticas + - etc..., o no 
+	permitir operadores aritmeticos en operaciones booleanas Y, O, etc...)
 
-	Como no hemos tenido tiempo para implementar todos los tipos que permite el lenguaje, decidimos cambiar una traducción en la declaración de variables (d_tipo a tipo_base) para facilitarnos el trabajo.
+	Como no hemos tenido tiempo para implementar todos los tipos que permite el lenguaje, decidimos cambiar una 
+	traducción en la declaración de variables (d_tipo a tipo_base) para facilitarnos el trabajo.
 
 	Se han creado los ficheros tablasimbolos.h y tablasimbolos.c para crear una estructura de
 	tabla de simbolos donde ir almacenando las variables definidas por el usuario y temporales.
 
-	Los ficheros tablacuadruplas.h, tablacuadruplas.c que definen e implementan la tabla de cuadruplas para ir almacenando el código intermedio.
+	Los ficheros tablacuadruplas.h, tablacuadruplas.c que definen e implementan la tabla de cuadruplas para ir 
+	almacenando el código intermedio.
 
-	La implementación, tanto de la tabla de simbolos como la de cuadruplas, se realizó con punteros para manejar las estructuras con mayor rapidez y sencilles.
+	La implementación, tanto de la tabla de simbolos como la de cuadruplas, se realizó con punteros para manejar 
+	las estructuras con mayor rapidez y sencilles.
 
-	También creamos el fichero exp_a_b.h y exp_a_b.c para poder definir la estructura de una expresión, que en nuestro caso podía ser aritmético o booleano. La estructura contiene unas variables para poder saber si es aritmético o booleano, y en caso de ser booleano cuenta con dos listas, true y false. Dichas listas se definieron en la tablacuadruplas, y cada nodo de la lista apunta a una cuadrupla de la tabla de cuadruplas, de esta manera el acceso es inmediato al quad que queremos acceder.
+	También creamos el fichero exp_a_b.h y exp_a_b.c para poder definir la estructura de una expresión, que en nuestro 
+	caso podía ser aritmético o booleano. La estructura contiene unas variables para poder saber si es aritmético o booleano, 
+	y en caso de ser booleano cuenta con dos listas, true y false. Dichas listas se definieron en la tablacuadruplas, y 
+	cada nodo de la lista apunta a una cuadrupla de la tabla de cuadruplas, de esta manera el acceso es inmediato al quad 
+	que queremos acceder.
 
-	Finalment, por limpieza también se han separado las macros a un header diferente (util.h), donde almacenamos macros de operaciones, tipos, strings, flags, conversión, saltos condicionales e incondicionales y constantes, que se usarán durante la ejecución del programa.
+	Finalment, por limpieza también se han separado las macros a un header diferente (util.h), donde almacenamos macros 
+	de operaciones, tipos, strings, flags, conversión, saltos condicionales e incondicionales y constantes, que se 
+	usarán durante la ejecución del programa.
 
 Instrucciones de compilación y ejecución:
 
